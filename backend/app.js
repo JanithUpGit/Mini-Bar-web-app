@@ -4,14 +4,14 @@ const express = require('express');
 const session = require('express-session');
 const app = express();
 const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes'); 
 require('dotenv').config();
 
 const port = process.env.PORT || 3000;
 
-// Middleware for parsing JSON data in requests
 app.use(express.json());
 
-// Configure and use express-session middleware
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -22,10 +22,10 @@ app.use(session({
   }
 }));
 
-// Set up the main user routes
 app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
 
-// A simple test route
+
 app.get('/', (req, res) => {
   res.send('Welcome to the Mini-Bar Backend!');
 });
