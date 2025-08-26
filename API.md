@@ -201,3 +201,70 @@ These endpoints are for managing the product inventory. All of these routes are 
       * **Description:** Permanently deletes a category from the database.
       * **URL Parameter:** `:id` is the category's ID.
       * **Protected:** Requires `isAuthenticated` and `isAdmin`.
+
+
+      ### **Order Endpoints**
+
+
+---
+
+#### **Authenticated Users (සාමාන්‍ය පරිශීලකයින්)**
+
+* **අලුත් Order එකක් සෑදීම**
+    * **Method:** `POST`
+    * **URL:** `/api/orders`
+    * **Description:** අලුත් order එකක් සාදා, එයට අදාළ products එකතු කරයි.
+    * **Protected:** `isAuthenticated` අවශ්‍ය වේ.
+
+* **Order එකක් Update කිරීම**
+    * **Method:** `PUT`
+    * **URL:** `/api/orders/:orderId`
+    * **Description:** **`Pending`** තත්ත්වයේ ඇති order එකක `delivery_address` එක වෙනස් කිරීමට සහ අලුත් products එකතු කිරීමට භාවිතා කරයි.
+    * **Protected:** `isAuthenticated` අවශ්‍ය වේ.
+    * **URL Parameter:** `:orderId` යනු order එකේ ID අංකයයි.
+    * **Request Body (JSON):**
+        ```json
+        {
+          "delivery_address": "Updated Address, Main Street, Colombo 01",
+          "orderItems": [
+            {
+              "product_id": 1,
+              "quantity": 3,
+              "price": 250.00
+            },
+            {
+              "product_id": 3,
+              "quantity": 1,
+              "price": 120.00
+            }
+          ]
+        }
+        ```
+
+* **Order එකක් Complete කිරීම**
+    * **Method:** `PUT`
+    * **URL:** `/api/orders/:orderId/complete`
+    * **Description:** order එකක් සාර්ථකව ලැබුණු පසු, එහි තත්ත්වය `Complete` ලෙස වෙනස් කරයි.
+    * **Protected:** `isAuthenticated` අවශ්‍ය වේ.
+
+* **තමන්ගේ Orders ලබාගැනීම**
+    * **Method:** `GET`
+    * **URL:** `/api/orders/my-orders`
+    * **Description:** Login වී සිටින පරිශීලකයාට අදාළ සියලුම orders වල history එක ලබාගනී.
+    * **Protected:** `isAuthenticated` අවශ්‍ය වේ.
+
+---
+
+#### **Admin-Only Endpoints (පරිපාලකවරුන්)**
+
+* **සියලුම Orders ලබාගැනීම**
+    * **Method:** `GET`
+    * **URL:** `/api/orders`
+    * **Description:** Database එකේ ඇති සියලුම orders ලැයිස්තුවක් ලබාගනී.
+    * **Protected:** `isAuthenticated` සහ `isAdmin` අවශ්‍ය වේ.
+
+* **Order Status එක Update කිරීම**
+    * **Method:** `PUT`
+    * **URL:** `/api/orders/status`
+    * **Description:** Admin කෙනෙකුට order එකක status එක `Shipped` වැනි ඕනෑම තත්ත්වයකට වෙනස් කිරීමට භාවිතා කරයි.
+    * **Protected:** `isAuthenticated` සහ `isAdmin` අවශ්‍ය වේ.
