@@ -55,3 +55,20 @@ The `frontend` folder contains all the files for the web application's user inte
 ├── index.html          (The main page of the web app)
 └── about.html          (Other optional pages as needed)
 ```
+
+
+## project setup steps
+
+* cd backend            'go to the backend folder'
+* npm install express    'run'
+* npm install mysql2
+* npm install dotenv
+* create .env file
+* go to the .env file and fix database connection with your settings
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=password
+DB_NAME=minibar_db
+```
+* node app.js 'run this file'
