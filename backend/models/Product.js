@@ -16,6 +16,21 @@ class Product {
     db.query(query, values, callback);
   }
 
+   static getByName(name, callback) {
+    const query = 'SELECT product_id FROM Products WHERE product_name = ?';
+    db.query(query, [name], (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0]); 
+    });
+  }
+  
+  static getAllAvailable(callback) {
+    const query = 'SELECT product_id, product_name, price, description, stock_quantity, category_id, is_available FROM Products WHERE stock_quantity > 0';
+    db.query(query, callback);
+  }
+
   // Product ID එකට අනුව product එකක් සොයාගැනීමට
   static getById(id, callback) {
     const query = 'SELECT product_id, product_name, price, description, stock_quantity, category_id, is_available FROM Products WHERE product_id = ?';
