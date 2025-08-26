@@ -1,42 +1,57 @@
+
 # Mini-Bar-web-app
-online bar stock handle system
 
+This project is a web application designed to manage bar stock online. The frontend is developed using **HTML, CSS, and JavaScript**, while the backend is built with **Express.js**.
 
-/frontend
-├── css/
-│   └── style.css (හෝ වෙනත් CSS files)
-├── js/
-│   ├── api.js (API calls සඳහා)
-│   ├── main.js (ප්‍රධාන application logic)
-│   └── components.js (දැන්වීම් වැනි කොටස් සඳහා)
-├── images/
-│   └── logo.png
-├── index.html (ප්‍රධාන පිටුව)
-└── about.html (අනෙකුත් පිටු)
+-----
 
-index.html: ප්‍රධාන HTML file එක. ඔබට තව පිටු අවශ්‍ය නම් about.html, contact.html වගේ වෙනත් files එකතු කරන්න පුළුවන්.
-css/: වෙබ් අඩවියේ පෙනුම සඳහා අවශ්‍ය සියලු CSS files මෙහි ගබඩා කරනවා.
-js/: වෙබ් අඩවියේ interactive functionalities සඳහා අවශ්‍ය සියලු JavaScript files මෙහි ගබඩා කරනවා. ඔබට API calls handle කරන්න වෙනම file එකක් (උදා: api.js) සහ ප්‍රධාන DOM manipulation logic සඳහා වෙනම file එකක් (උදා: main.js) යොදාගන්න පුළුවන්.
-images/: ඔබගේ වෙබ් අඩවියට අවශ්‍ය රූප (logos, icons) මෙහි තබන්න.
+## Folder Structure
 
+The project is divided into two main parts: `frontend` and `backend`.
 
+### Backend Folder Structure
+
+The `backend` folder contains the RESTful API built with **Node.js** and **Express.js**.
+
+```
 /backend
 ├── node_modules/
 ├── controllers/
-│   ├── productController.js
-│   ├── orderController.js
-│   └── userController.js
+│   ├── productController.js  (Business logic for products)
+│   ├── orderController.js    (Business logic for orders)
+│   └── userController.js     (Business logic for users)
 ├── models/
-│   ├── Product.js
-│   ├── Order.js
-│   └── User.js
+│   ├── Product.js            (Product model)
+│   ├── Order.js              (Order model)
+│   └── User.js               (User model)
 ├── routes/
-│   ├── productRoutes.js
-│   ├── orderRoutes.js
-│   └── userRoutes.js
+│   ├── productRoutes.js      (API routes for products)
+│   ├── orderRoutes.js        (API routes for orders)
+│   └── userRoutes.js         (API routes for users)
 ├── config/
-│   └── db.js (Database සම්බන්ධතාවය සඳහා)
+│   └── db.js                 (Database connection settings)
 ├── middleware/
-│   └── authMiddleware.js (Authentication වැනි කාර්යයන් සඳහා)
-├── app.js (or server.js)
-└── package.json
+│   └── authMiddleware.js     (For authentication and other tasks)
+├── app.js                    (The main Express.js server file)
+└── package.json              (List of dependencies)
+```
+
+-----
+
+### Frontend Folder Structure
+
+The `frontend` folder contains all the files for the web application's user interface (UI).
+
+```
+/frontend
+├── css/
+│   └── style.css       (CSS code for the web page's appearance)
+├── js/
+│   ├── api.js          (Manages all API calls)
+│   ├── main.js         (Main DOM manipulations and logic)
+│   └── components.js   (Reusable components for the website)
+├── images/
+│   └── logo.png        (Project images and icons)
+├── index.html          (The main page of the web app)
+└── about.html          (Other optional pages as needed)
+```
