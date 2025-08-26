@@ -64,6 +64,7 @@ The `frontend` folder contains all the files for the web application's user inte
 * npm install mysql2
 * npm install dotenv
 * npm install express-session
+* npm install bcryptjs
 * create .env file
 * go to the .env file and fix database connection with your settings
 ```
