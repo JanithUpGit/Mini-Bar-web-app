@@ -146,3 +146,58 @@ These endpoints are for managing the product inventory. All of these routes are 
     * **URL Parameter:** `:id` is the product's ID.
     * **Protected:** Requires `isAuthenticated` and `isAdmin`.
 
+
+-----
+
+### **Category Endpoints**
+
+
+  * **Get All Categories**
+
+      * **Method:** `GET`
+      * **URL:** `/api/categories`
+      * **Description:** Retrieves a list of all categories in the database.
+      * **Protected:** Requires `no`.
+
+  * **Create a New Category**
+
+      * **Method:** `POST`
+      * **URL:** `/api/categories`
+      * **Description:** Adds a new category to the database.
+      * **Request Body (JSON):**
+        ```json
+        {
+          "category_name": "New Category"
+        }
+        ```
+      * **Protected:** Requires `isAuthenticated` and `isAdmin`.
+
+  * **Get a Category by ID**
+
+      * **Method:** `GET`
+      * **URL:** `/api/categories/:id`
+      * **Description:** Retrieves the details of a specific category.
+      * **URL Parameter:** `:id` is the category's ID.
+      * **Protected:** 
+
+  * **Update a Category**
+
+      * **Method:** `PUT`
+      * **URL:** `/api/categories/:id`
+      * **Description:** Updates the information for an existing category.
+      * **URL Parameter:** `:id` is the category's ID.
+      * **Request Body (JSON):**
+        ```json
+        {
+          "category_name": "Updated Category Name"
+        }
+        ```
+      * **Protected:** Requires `isAuthenticated` and `isAdmin`.
+
+  * **Delete a Category**
+
+      * **Method:** `DELETE`
+      * **URL:** `/api/categories/:id`
+      * **Description:** Permanently deletes a category from the database.
+      * **URL Parameter:** `:id` is the category's ID.
+      * **Protected:** Requires `isAuthenticated` and `isAdmin`.
