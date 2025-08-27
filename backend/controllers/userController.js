@@ -82,7 +82,6 @@ exports.deleteUser = (req, res) => {
   });
 };
 
-// New login and logout functions
 exports.loginUser = (req, res) => {
   const { email, password } = req.body;
   
@@ -92,6 +91,7 @@ exports.loginUser = (req, res) => {
 
   User.getByEmail(email, (err, user) => {
     if (err) {
+      console.error('Login error:', err);
       return res.status(500).json({ error: 'Failed to retrieve user.' });
     }
     if (!user) {
@@ -106,14 +106,17 @@ exports.loginUser = (req, res) => {
         return res.status(401).json({ error: 'Invalid credentials.' });
       }
 
-      req.session.userId = user.user_id;
-      req.session.userRole = user.user_role;
-      req.session.isLoggedIn = true;
+      // Login සාර්ථකයි, user ගේ තොරතුරු session එකට එකතු කරයි
+      req.session.user = { 
+        user_id: user.user_id, 
+        user_role: user.user_role 
+      };
 
       res.status(200).json({ message: 'Login successful', user: { id: user.user_id, role: user.user_role } });
     });
   });
 };
+
 
 exports.logoutUser = (req, res) => {
   req.session.destroy((err) => {
