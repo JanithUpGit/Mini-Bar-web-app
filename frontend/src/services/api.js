@@ -1,0 +1,78 @@
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // 401 (Unauthorized) දෝෂය හසුකරගෙන login පිටුවට යොමු කරයි
+    if (error.response?.status === 401) {
+      window.location.href = '/login.html';
+    }
+    return Promise.reject(error);
+  }
+);
+
+
+export const authAPI = {
+  login: (email, password) => api.post('/users/login', { email, password }),
+  register: (userData) => api.post('/users/register', userData),
+  getProfile: () => api.get('/users/profile'),
+  updateProfile: (userData) => api.put('/users/profile', userData),
+  logout: () => api.post('/users/logout')
+};
+
+export const itemAPI = {
+  getAllItems: () => api.get('/items/all'),
+  getItem: (id) => api.get(`/items/${id}`),
+  createItem: (itemData) => api.post('/items/create', itemData),
+  updateItem: (id, itemData) => api.put(`/items/${id}/update`, itemData),
+  deleteItem: (id) => api.delete(`/items/${id}/delete`),
+};
+
+export const orderAPI = {
+  createOrder: (orderData) => api.post('/orders/create', orderData),
+  getAllOrders: () => api.get('/orders/all'),
+  getOrder: (id) => api.get(`/orders/${id}`),
+  updateOrderStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
+  getUserOrders: (userId) => api.get(`/orders/user/${userId}/all`),
+};
+
+export const feedbackAPI = {
+  createFeedback: (feedbackData) => api.post('/feedback/create', feedbackData),
+  getAllFeedback: () => api.get('/feedback/all'),
+  getFeedbackByOrder: (orderId) => api.get(`/feedback/order/${orderId}`),
+};
+
+export const paymentAPI = {
+  processPayment: (paymentData) => api.post('/payments/process', paymentData),
+  getAllPayments: () => api.get('/payments/all'),
+  getPaymentByOrder: (orderId) => api.get(`/payments/order/${orderId}`),
+};
+
+export const categoryAPI = {
+  getAllCategories: () => api.get('/categories/all'),
+  getCategory: (id) => api.get(`/categories/${id}`),
+  createCategory: (categoryData) => api.post('/categories/create', categoryData),
+};
+
+// පහසුව සඳහා සියලු APIs එක object එකක් ලෙස export කිරීම
+export const apiService = {
+  auth: authAPI,
+  items: itemAPI,
+  orders: orderAPI,
+  feedback: feedbackAPI,
+  payments: paymentAPI,
+  categories: categoryAPI
+};
+
+// ඔබට අවශ්‍ය පරිදි export කරගත හැකියි
+export default api;
