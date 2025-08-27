@@ -3,105 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Bar Admin Dashboard</title>
-    <link rel="stylesheet" href="css/admin_dashboard.css">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .dashboard-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        .data-card {
+            background-color: #e9ecef;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+        }
+        .data-card h3 {
+            margin: 0;
+            color: #555;
+            font-size: 1.2rem;
+        }
+        .data-card p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 0.5rem 0 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo">Mini Bar Admin</div>
-            <nav>
-                <ul>
-                    <li><a href="#" class="active" data-section="overview">Overview</a></li>
-                    <li><a href="#" data-section="stock">Stock Management</a></li>
-                    <li><a href="#" data-section="users">User Details</a></li>
-                    <li><a href="#" data-section="orders">Orders</a></li>
-                </ul>
-            </nav>
-        </aside>
 
-        <main class="main-content">
-            <header class="header">
-                <h1>Dashboard</h1>
-                <div class="user-profile">
-                    <span id="admin-name">Admin Name</span>
-                    <button id="logout-btn">Logout</button>
-                </div>
-            </header>
-
-            <section id="overview" class="dashboard-section active">
-                <h2>Overview</h2>
-                <div class="cards">
-                    <div class="card">
-                        <h3>Today's Revenue</h3>
-                        <p id="revenue-data">$0.00</p>
-                    </div>
-                    <div class="card">
-                        <h3>New Orders</h3>
-                        <p id="new-orders-count">0</p>
-                    </div>
-                    <div class="card">
-                        <h3>Total Users</h3>
-                        <p id="total-users-count">0</p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="stock" class="dashboard-section">
-                <h2>Stock Management</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stock-data-table">
-                            </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="users" class="dashboard-section">
-                <h2>User Details</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Joined Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user-data-table">
-                            </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="orders" class="dashboard-section">
-                <h2>Orders</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Status</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="order-data-table">
-                            </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+<div class="dashboard-container">
+    <h2>Admin Dashboard</h2>
+    <div class="data-card">
+        <h3>මුළු ඇනවුම් ගණන (Total Orders)</h3>
+        <p id="totalOrders">දත්ත loading වෙමින් පවතී...</p>
     </div>
-    <script src="js/admin_dashboard.js"></script>
+    <div class="data-card">
+        <h3>Pending ඇනවුම් ගණන (Pending Orders)</h3>
+        <p id="pendingOrders">දත්ත loading වෙමින් පවතී...</p>
+    </div>
+    <div class="data-card">
+        <h3>මුළු පරිශීලකයින් ගණන (Total Users)</h3>
+        <p id="totalUsers">දත්ත loading වෙමින් පවතී...</p>
+    </div>
+</div>
+
+<script>
+    
+    const API_URL = 'http://localhost:3000/api/orders';
+
+    // dashboard එකට අවශ්‍ය දත්ත ලබාගැනීම සඳහා
+    async function getDashboardData() {
+        try {
+            // fetch() මඟින් backend එකට request එක යවයි
+            // මෙම API endpoint එකට, පරිශීලකයා logged in වී admin කෙනෙක් විය යුතුය
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // ලැබෙන JSON data, JavaScript object එකක් බවට පත් කරයි
+            const data = await response.json();
+
+            // ලැබුණු data, HTML page එකේ අදාළ ස්ථානවල display කරයි
+            document.getElementById('totalOrders').textContent = data.totalOrders;
+            document.getElementById('pendingOrders').textContent = data.pendingOrders;
+            document.getElementById('totalUsers').textContent = data.totalUsers;
+
+        } catch (error) {
+            console.error('Fetching dashboard data failed:', error);
+            document.getElementById('totalOrders').textContent = 'දත්ත ලබාගැනීමේදී දෝෂයක් සිදුවිය';
+            document.getElementById('pendingOrders').textContent = '';
+            document.getElementById('totalUsers').textContent = '';
+        }
+    }
+
+    // function එක ක්‍රියාත්මක කිරීම
+    getDashboardData();
+</script>
+
 </body>
 </html>

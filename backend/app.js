@@ -1,6 +1,7 @@
 // backend/app.js
 
 const express = require('express');
+const cors = require('cors');
 const session = require('express-session');
 const app = express();
 const userRoutes = require('./routes/userRoutes');
@@ -10,7 +11,7 @@ const orderRoutes = require('./routes/orderRoutes');
 require('dotenv').config();
 
 const port = process.env.PORT || 3000;
-
+app.use(cors()); 
 app.use(express.json());
 
 
@@ -22,6 +23,11 @@ app.use(session({
     secure: false, 
     maxAge: 1000 * 60 * 60 * 24 
   }
+}));
+
+app.use(cors({
+  origin: 'http://127.0.0.1:5500',
+  credentials: true
 }));
 
 app.use('/api/users', userRoutes);
