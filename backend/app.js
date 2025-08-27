@@ -11,10 +11,11 @@ const orderRoutes = require('./routes/orderRoutes');
 require('dotenv').config();
 
 const port = process.env.PORT || 3000;
-app.use(cors()); 
+
+// Middleware වල නිවැරදි පිළිවෙළ
 app.use(express.json());
 
-
+// Session middleware එක cors වලට පෙර තිබිය යුතුයි
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -25,11 +26,13 @@ app.use(session({
   }
 }));
 
+// CORS middleware එක නිවැරදිව configure කරන්න
 app.use(cors({
-  origin: 'http://127.0.0.1:5500',
-  credentials: true
+  origin: 'http://localhost:5174',
+  credentials: true,
 }));
 
+// Routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
