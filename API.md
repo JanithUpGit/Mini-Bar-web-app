@@ -1,4 +1,3 @@
-Please see the complete API list in the requested format below.
 
 -----
 
