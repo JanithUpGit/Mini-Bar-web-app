@@ -31,9 +31,12 @@ CREATE TABLE Orders (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     order_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('PENDING', 'COMPLETED', 'CANCELLED') NOT NULL,
+    status ENUM('PENDING','SHIPPED', 'COMPLETED', 'CANCELLED') NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
+    delivery_address TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    
 );
 
 

@@ -1,0 +1,14 @@
+# .gitignore file එකේ නිවැරදි ආකාරය
+# Ignore all .env files
+.env*
+ 
+# Ignore the node_modules directory
+node_modules/
+ 
+# Ignore log files
+*.log
+ 
+# Ignore lock files
+# package-lock.json කියන්නේ npm එකෙන් dependency versions lock කරන file එක
+package-lock.json
+ 
