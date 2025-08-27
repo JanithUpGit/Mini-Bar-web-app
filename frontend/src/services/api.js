@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -9,18 +10,15 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // 401 (Unauthorized) දෝෂය හසුකරගෙන login පිටුවට යොමු කරයි
     if (error.response?.status === 401) {
       window.location.href = '/login.html';
     }
     return Promise.reject(error);
   }
 );
-
 
 export const authAPI = {
   login: (email, password) => api.post('/users/login', { email, password }),

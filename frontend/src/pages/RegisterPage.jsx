@@ -1,33 +1,46 @@
-import React, { useState } from 'react';
-import { authAPI } from '../services/api';
+import React, { useState } from "react";
+import { authAPI } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
+  const navigate = useNavigate();
   const handleRegister = async (e) => {
     e.preventDefault();
-    setMessage('Loading...');
+    setMessage("Loading...");
     setIsError(false);
 
     try {
-      // Calling the authAPI.register function
-      const response = await authAPI.register({ user_name: userName, email, password });
-      
-      if (response.success) {
-        setMessage('Successfully registered! You can now log in. 😊');
+      // The data to be sent to the backend
+      const userData = {
+        user_name: userName,
+        email: email,
+        password: password,
+        user_role: "USER",
+      };
+
+      const response = await authAPI.register(userData);
+
+      // Checking the response status code for success
+      if (response.status === 201 || response.status === 200) {
+        setMessage("Successfully registered! You can now log in. 😊");
+        navigate("/login");
         setIsError(false);
       } else {
-        setMessage(response.error || 'Registration failed.');
+        setMessage(response.data.error || "Registration failed.");
         setIsError(true);
       }
     } catch (error) {
-      setMessage(error.error || 'Failed to connect to the server.');
+      setMessage(
+        error.response?.data.error || "Failed to connect to the server."
+      );
       setIsError(true);
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
     }
   };
 
@@ -68,7 +81,11 @@ const RegisterPage = () => {
           </button>
         </form>
         {message && (
-          <div className={`mt-4 font-bold ${isError ? 'text-red-500' : 'text-green-600'}`}>
+          <div
+            className={`mt-4 font-bold ${
+              isError ? "text-red-500" : "text-green-600"
+            }`}
+          >
             {message}
           </div>
         )}
