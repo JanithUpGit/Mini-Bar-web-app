@@ -13,16 +13,19 @@ class User {
     db.query(query, [id], callback);
   }
 
-  static getByEmail(email, callback) {
-    const query = 'SELECT user_id, email, password_hash, user_role, user_status FROM Users WHERE email = ?';
+ static getByEmail(email, callback) {
+    const query = "SELECT * FROM Users WHERE email = ?";
     db.query(query, [email], (err, results) => {
       if (err) {
         return callback(err);
       }
-      callback(null, results[0]);
+      if (results.length > 0) {
+        callback(null, results[0]);
+      } else {
+        callback(null, null);
+      }
     });
   }
-
   static create(user, callback) {
     const query = 'INSERT INTO Users (user_name, email, password_hash, user_status, user_role) VALUES (?, ?, ?, ?, ?)';
     const values = [user.user_name, user.email, user.password_hash, user.user_status, user.user_role];
