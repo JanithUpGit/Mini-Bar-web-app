@@ -33,9 +33,9 @@ function App() {
         <Route 
           path="/dashboard" 
           element={
-            <ProtectedRoute>
+            //<ProtectedRoute>
               <AdminDashboardPage/>
-            </ProtectedRoute>
+            //</ProtectedRoute>
           } 
         />
         
