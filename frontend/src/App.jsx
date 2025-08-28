@@ -4,7 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboardPage from './pages/AdminDashbordPage';
 import RegisterPage from './pages/RegisterPage';
-
+import { CartProvider } from '../store/CartContext';
 const isAuthenticated = () => {
   // මෙහිදී ඔබගේ backend API එකට request එකක් යවා
   // පරිශීලකයාගේ session එක check කළ යුතුය.
@@ -24,6 +24,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
+     <CartProvider> 
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -43,6 +44,7 @@ function App() {
         <Route path="*" element={<h1>404: පිටුව සොයාගත නොහැක</h1>} />
       </Routes>
     </BrowserRouter>
+    </CartProvider>
   );
 }
 

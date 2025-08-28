@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag } from "lucide-react"; 
 import Navbar from "../components/nav";
-
+import { useCart } from "../../store/CartContext";
 // apiService එක import කර ගනිමු
 import { apiService } from "../services/api"; 
 
@@ -13,6 +13,7 @@ const HomePage = () => {
   const [error, setError] = useState(null); // දෝෂ පණිවිඩ සඳහා
 
  
+  const { addToCart } = useCart(); 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -105,7 +106,9 @@ const HomePage = () => {
                     </h3>
                     <p className="text-gray-500 text-sm mb-2">{product.description}</p>
                     <p className="text-blue-600 font-bold">Rs. {product.price}</p>
-                    <button className="mt-3 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                    <button 
+                    className="mt-3 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                     onClick={() => addToCart(product)}>
                       Add to Cart
                     </button>
                   </div>
