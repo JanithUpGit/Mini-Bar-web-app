@@ -1,33 +1,76 @@
-
+import React, { useState } from 'react';
+import { authAPI } from '../services/api';
+import Navbar from '../components/nav';
 
 const LoginPage = () => {
-  // ... state hooks
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setMessage('Loading...');
+  setIsError(false);
+
+  try {
+    console.log(email,password);
+    const response = await authAPI.login({ email, password });
+    
+    if (response.status === 200) {
+      // Login සාර්ථක නම්
+      setMessage('සාර්ථකව ප්‍රවේශ විය! 🎉');
+      setIsError(false);
+      // මෙහිදී redirect කිරීමේ කේතය එකතු කරන්න
+    } else {
+      // මෙය ප්‍රධාන වශයෙන් අවශ්‍ය නැත
+      setMessage(response.data.error || 'Login failed. Please check your credentials.');
+      setIsError(true);
+    }
+  } catch (error) {
+    // 400 දෝෂයක් වැනි අසාර්ථක ප්‍රතිචාර මෙහිදී හසුවෙයි.
+    // backend එකෙන් ලැබෙන නිවැරදි දෝෂ පණිවිඩය පෙන්වයි.
+    setMessage(error.response?.data?.error || 'Login failed. Please check your credentials.');
+    setIsError(true);
+    console.error('Login error:', error);
+  }
+};
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96 text-center">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">ප්‍රවේශ වන්න</h2>
-        <form>
+    
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+      <Navbar/>
+      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">Login</h2>
+        <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
-            placeholder="ඊමේල් ලිපිනය"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
           <input
             type="password"
-            placeholder="මුරපදය"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-300"
+            className="w-full py-3 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
           >
-            ප්‍රවේශ වන්න
+            Login
           </button>
         </form>
-        {/* ... message */}
+        {message && (
+          <div className={`mt-4 font-bold ${isError ? 'text-red-500' : 'text-green-600'}`}>
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );
