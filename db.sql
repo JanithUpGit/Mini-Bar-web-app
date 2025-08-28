@@ -12,7 +12,8 @@ CREATE TABLE Users (
 
 CREATE TABLE Categories (
     category_id INT PRIMARY KEY AUTO_INCREMENT,
-    category_name VARCHAR(255) NOT NULL UNIQUE
+    category_name VARCHAR(255) NOT NULL UNIQUE,
+    image_url VARCHAR(255)
 );
 
 
@@ -24,6 +25,7 @@ CREATE TABLE Products (
     stock_quantity INT NOT NULL,
     category_id INT,
     is_available BOOLEAN DEFAULT TRUE,
+    image_url VARCHAR(255),
     FOREIGN KEY (category_id) REFERENCES Categories(category_id)
 );
 
