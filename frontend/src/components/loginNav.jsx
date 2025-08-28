@@ -6,12 +6,12 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-lg fixed w-full top-0 left-0 z-50">
+    <nav className="bg-gray-100 shadow-lg fixed w-full top-0 left-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo/Brand */}
           <div className="flex-shrink-0 text-2xl font-bold text-blue-600">
-            <Link to="/">MyBrand</Link>
+            <Link to="/">Sarasavi Wine Stores</Link>
           </div>
 
           {/* Desktop Menu */}
