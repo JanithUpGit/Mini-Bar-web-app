@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import {backgroundimage} from '../../assets/images/Login_Register_BG.png';
+//import {backgroundimage} from '../../assets/images/Login_Register_BG.png';
+import bgImage from "../assets/images/Login_Register_BG.png";
 import { authAPI } from '../services/api';
 import Navbar from '../components/loginNav';
 import { useNavigate } from 'react-router-dom';
@@ -39,8 +40,11 @@ const handleLogin = async (e) => {
 };
 
   return (
-    
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div
+  className="flex justify-center items-center min-h-screen bg-cover bg-center p-4"
+  style={{ backgroundImage: `url(${bgImage})` }}
+>
+
       <Navbar/>
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
         <h2 className="text-3xl font-bold mb-6 text-gray-800">Login</h2>
@@ -63,7 +67,7 @@ const handleLogin = async (e) => {
           />
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            className="w-full py-3 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
           >
             Login
           </button>
