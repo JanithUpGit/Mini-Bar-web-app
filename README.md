@@ -79,3 +79,4 @@ DB_NAME=minibar_db
 * cd frontend
 * npm install react-router-dom
 * npm install tailwindcss @tailwindcss/vite
+* npm install lucide-react
