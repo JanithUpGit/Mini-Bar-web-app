@@ -6,6 +6,8 @@ import AdminDashboardPage from './pages/AdminDashbordPage';
 import RegisterPage from './pages/RegisterPage';
 import { CartProvider } from '../store/CartContext';
 import { AuthProvider } from '../store/AuthContext';
+import StorePage from './pages/StorePage';
+import OrdersPage from './pages/OrderPage';
 const isAuthenticated = () => {
   // මෙහිදී ඔබගේ backend API එකට request එකක් යවා
   // පරිශීලකයාගේ session එක check කළ යුතුය.
@@ -32,13 +34,16 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/store" element={<StorePage />} />
+        <Route path="/orders" element={ <ProtectedRoute><OrdersPage/> </ProtectedRoute>} />
+        
         
         <Route 
           path="/dashboard" 
           element={
-            //<ProtectedRoute>
+            <ProtectedRoute>
               <AdminDashboardPage/>
-            //</ProtectedRoute>
+            </ProtectedRoute>
           } 
         />
         

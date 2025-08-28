@@ -25,6 +25,7 @@ const HomePage = () => {
 
         const productsResponse = await apiService.products.getAvailableProducts();
         setProducts(productsResponse.data);
+        
       } catch (err) {
         console.error("Failed to fetch data:", err);
         setError("දත්ත ලබා ගැනීමේදී දෝෂයක් සිදුවිය. පසුව නැවත උත්සාහ කරන්න.");
@@ -35,6 +36,7 @@ const HomePage = () => {
 
     fetchData();
   }, []);
+  console.log("products", products);
 
   return (
     <>

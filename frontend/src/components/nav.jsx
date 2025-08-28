@@ -27,8 +27,10 @@ const Navbar = () => {
           <div className="hidden md:flex space-x-8 items-center">
             <a href="/" className="text-gray-700 hover:text-blue-600 transition">Home</a>
             <a href="/offers" className="text-gray-700 hover:text-blue-600 transition">Offers</a>
+             <a href="/store" className="text-gray-700 hover:text-blue-600 transition">Store</a>
             <a href="/orders" className="text-gray-700 hover:text-blue-600 transition">Orders</a>
             <a href="/contact" className="text-gray-700 hover:text-blue-600 transition">Contact</a>
+            
             
             {/* Admin පමණක් Dashboard දකිනු ඇත */}
             {isAdmin && (
@@ -73,6 +75,7 @@ const Navbar = () => {
         <div className="md:hidden bg-white border-t shadow-lg">
           <a href="/" className="block px-4 py-2 text-gray-700 hover:bg-blue-100">Home</a>
           <a href="/offers" className="block px-4 py-2 text-gray-700 hover:bg-blue-100">Offers</a>
+          <a href="/store" className="block px-4 py-2 text-gray-700 hover:bg-blue-100">Store</a>
           <a href="/orders" className="block px-4 py-2 text-gray-700 hover:bg-blue-100">Orders</a>
           <a href="/contact" className="block px-4 py-2 text-gray-700 hover:bg-blue-100">Contact</a>
           
