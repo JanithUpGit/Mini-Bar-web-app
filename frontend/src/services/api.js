@@ -63,15 +63,13 @@ export const categoryAPI = {
   createCategory: (categoryData) => api.post('/categories/create', categoryData),
 };
 
-// පහසුව සඳහා සියලු APIs එක object එකක් ලෙස export කිරීම
 export const apiService = {
   auth: authAPI,
-  items: itemAPI,
+  items: productAPI,
   orders: orderAPI,
   feedback: feedbackAPI,
   payments: paymentAPI,
   categories: categoryAPI
 };
 
-// ඔබට අවශ්‍ය පරිදි export කරගත හැකියි
 export default api;
