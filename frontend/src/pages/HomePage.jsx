@@ -10,6 +10,7 @@ const HomePage = () => {
   // Fetch data from backend API
   useEffect(() => {
     
+    
 
     fetch("http://localhost:5000/api/products")
       .then((res) => res.json())

@@ -25,13 +25,12 @@ const handleLogin = async (e) => {
       setIsError(false);
       navigate("/");
     } else {
-      // මෙය ප්‍රධාන වශයෙන් අවශ්‍ය නැත
+    
       setMessage(response.data.error || 'Login failed. Please check your credentials.');
       setIsError(true);
     }
   } catch (error) {
-    // 400 දෝෂයක් වැනි අසාර්ථක ප්‍රතිචාර මෙහිදී හසුවෙයි.
-    // backend එකෙන් ලැබෙන නිවැරදි දෝෂ පණිවිඩය පෙන්වයි.
+
     setMessage(error.response?.data?.error || 'Login failed. Please check your credentials.');
     setIsError(true);
     console.error('Login error:', error);
