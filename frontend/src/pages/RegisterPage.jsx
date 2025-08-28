@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { authAPI } from '../services/api';
 
 const RegisterPage = () => {
+  
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
