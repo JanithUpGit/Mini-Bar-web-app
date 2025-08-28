@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboardPage from './pages/AdminDashbordPage';
 import RegisterPage from './pages/RegisterPage';
 import { CartProvider } from '../store/CartContext';
+import { AuthProvider } from '../store/AuthContext';
 const isAuthenticated = () => {
   // මෙහිදී ඔබගේ backend API එකට request එකක් යවා
   // පරිශීලකයාගේ session එක check කළ යුතුය.
@@ -24,6 +25,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
+    <AuthProvider>
      <CartProvider> 
     <BrowserRouter>
       <Routes>
@@ -45,6 +47,7 @@ function App() {
       </Routes>
     </BrowserRouter>
     </CartProvider>
+    </AuthProvider>
   );
 }
 

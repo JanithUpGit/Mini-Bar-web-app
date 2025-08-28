@@ -6,7 +6,7 @@ const CartContext = createContext();
 
 // CartProvider component එක නිර්මාණය කිරීම
 export const CartProvider = ({ children }) => {
-    
+
   const [cartItems, setCartItems] = useState(() => {
     try {
       const storedCartItems = localStorage.getItem('cartItems');
@@ -66,7 +66,7 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// පහසුවෙන් Context එක භාවිතා කිරීම සඳහා custom hook එකක්
+
 export const useCart = () => {
   return useContext(CartContext);
 };
