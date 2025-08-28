@@ -1,31 +1,30 @@
 // backend/models/Category.js
-
 const db = require('../config/db');
 
 class Category {
-  // සියලුම categories ලබාගැනීමට
   static getAll(callback) {
-    const query = 'SELECT category_id, category_name FROM Categories';
+    const query = 'SELECT category_id, category_name, image_url FROM Categories';
     db.query(query, callback);
   }
 
-  // අලුත් category එකක් එකතු කිරීමට
   static create(category, callback) {
-    const query = 'INSERT INTO Categories (category_name) VALUES (?)';
-    const values = [category.category_name];
+
+    const query = 'INSERT INTO Categories (category_name, image_url) VALUES (?, ?)';
+    const values = [category.category_name, category.image_url];
     db.query(query, values, callback);
   }
 
-  // Category ID එකට අනුව category එකක් සොයාගැනීමට
   static getById(id, callback) {
-    const query = 'SELECT category_id, category_name FROM Categories WHERE category_id = ?';
+    // image_url තීරුවද ලබා ගැනීමට query එක යාවත්කාලීන කරයි
+    const query = 'SELECT category_id, category_name, image_url FROM Categories WHERE category_id = ?';
     db.query(query, [id], callback);
   }
 
-  // Category එකක් update කිරීමට
+  // Category එකක් image_url සමඟ update කිරීමට
   static update(id, updatedCategory, callback) {
-    const query = 'UPDATE Categories SET category_name = ? WHERE category_id = ?';
-    const values = [updatedCategory.category_name, id];
+    // image_url තීරුව ද UPDATE විධානයට එකතු කරයි
+    const query = 'UPDATE Categories SET category_name = ?, image_url = ? WHERE category_id = ?';
+    const values = [updatedCategory.category_name, updatedCategory.image_url, id];
     db.query(query, values, callback);
   }
 
