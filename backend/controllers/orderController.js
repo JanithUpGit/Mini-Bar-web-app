@@ -62,7 +62,7 @@ exports.completeOrder = (req, res) => {
   });
 };
 
-// පරිශීලකයෙකුගේ orders ලබාගැනීමට
+
 exports.getUserOrders = (req, res) => {
   const userId = req.user.user_id; 
   Order.getOrdersByUser(userId, (err, results) => {

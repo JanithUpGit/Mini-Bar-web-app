@@ -10,6 +10,10 @@ const Navbar = () => {
   const { getTotalItems } = useCart();
   const cartItemCount = getTotalItems();
 
+  const { user } = useAuth();
+  console.log(user);
+  const isAdmin = user?.role === "ADMIN";
+
   return (
     <nav className="bg-black/80 shadow-lg fixed w-full top-0 left-0 z-50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

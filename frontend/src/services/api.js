@@ -47,7 +47,7 @@ export const orderAPI = {
   getAllOrders: () => api.get('/orders'),
   getOrder: (id) => api.get(`/orders/${id}`),
   updateOrderStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
-  getUserOrders: (userId) => api.get(`/users/${userId}/orders`),
+  getUserOrders: () => api.get(`/orders/my-orders`),
 };
 
 // ප්‍රවර්ග API calls

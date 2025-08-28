@@ -1,3 +1,4 @@
+create database sm_bar_database;
 use sm_bar_database;
 CREATE TABLE Users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,

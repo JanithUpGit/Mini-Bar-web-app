@@ -4,6 +4,7 @@ import bgImage from "../assets/images/Login_Register_BG.png";
 import { authAPI } from '../services/api';
 import Navbar from '../components/loginNav';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../store/AuthContext'; // useAuth hook එක import කරගන්න
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,32 +13,38 @@ const LoginPage = () => {
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setMessage('Loading...');
-  setIsError(false);
+  // useAuth hook එකෙන් login function එක ලබාගන්න
+  const { login } = useAuth();
 
-  try {
-    console.log(email,password);
-    const response = await authAPI.login({ email, password });
-    
-    if (response.status === 200) {
-      // Login සාර්ථක නම්
-      setMessage('සාර්ථකව ප්‍රවේශ විය! 🎉');
-      setIsError(false);
-      navigate("/");
-    } else {
-    
-      setMessage(response.data.error || 'Login failed. Please check your credentials.');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setMessage('Loading...');
+    setIsError(false);
+
+    try {
+      console.log(email, password);
+      const response = await authAPI.login({ email, password });
+      
+      if (response.status === 200) {
+        // Login සාර්ථක නම්
+        const { user } = response.data; // response එකෙන් user object එක ලබාගන්න
+        
+        // user object එක AuthContext එකේ login function එකට යවන්න
+        login(user); 
+
+        setMessage('සාර්ථකව ප්‍රවේශ විය! 🎉');
+        setIsError(false);
+        navigate("/");
+      } else {
+        setMessage(response.data.error || 'Login failed. Please check your credentials.');
+        setIsError(true);
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.error || 'Login failed. Please check your credentials.');
       setIsError(true);
+      console.error('Login error:', error);
     }
-  } catch (error) {
-
-    setMessage(error.response?.data?.error || 'Login failed. Please check your credentials.');
-    setIsError(true);
-    console.error('Login error:', error);
-  }
-};
+  };
 
   return (
     <div
