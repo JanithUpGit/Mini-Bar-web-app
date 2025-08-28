@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Menu, X, ShoppingCart } from "lucide-react";
-
+import bgImage from "../assets/images/navlogo.png";
 import { useCart } from "../../store/CartContext";
 import { useAuth } from "../../store/AuthContext";
 
