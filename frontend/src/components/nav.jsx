@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Menu, X, ShoppingCart } from "lucide-react"; // ShoppingCart icon
-import { useCart } from "../../store/CartContext"; // useCart hook
-import bgImage from "../assets/images/navlogo.png"; // logo image
+import { Menu, X, ShoppingCart } from "lucide-react";
+
+import { useCart } from "../../store/CartContext";
+import { useAuth } from "../../store/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);

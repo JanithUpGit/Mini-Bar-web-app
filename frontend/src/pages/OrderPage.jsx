@@ -8,11 +8,13 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
+  // Auth context එකෙන් user ගේ තොරතුරු ලබා ගනිමු
   const { user } = useAuth();
   
   useEffect(() => {
     const fetchOrders = async () => {
+      // පරිශීලකයෙක් login වී ඇත්දැයි පරීක්ෂා කරමු
       if (!user) {
         setLoading(false);
         setError("ඔබගේ orders බැලීම සඳහා ඔබ log in විය යුතුය.");
@@ -20,7 +22,7 @@ const OrdersPage = () => {
       }
       
       try {
-        const response = await apiService.orders.getUserOrders();
+        const response = await apiService.orders.getUserOrders(user.id);
         setOrders(response.data);
       } catch (err) {
         console.error("Failed to fetch orders:", err);
@@ -31,41 +33,46 @@ const OrdersPage = () => {
     };
 
     fetchOrders();
-  }, [user]);
+  }, [user]); // user state එක වෙනස් වන විට නැවත දත්ත ලබා ගනිමු
 
   // Pending සහ Completed orders වෙන් කරමු
   const pendingOrders = orders.filter(order => order.status === 'PENDING');
   const completedOrders = orders.filter(order => order.status === 'COMPLETED');
 
-  const renderOrderCard = (order, status) => (
-    <div key={order.order_id} className="bg-white rounded-xl shadow-md p-6 mb-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-gray-800">Order #{order.order_id}</h3>
-        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-          status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
-        }`}>
-          {status === 'PENDING' ? <Clock size={16} /> : <CheckCircle size={16} />}
-          {status === 'PENDING' ? 'Pending' : 'Completed'}
+  const renderOrderCard = (order, status) => {
+    // total_price එක නැතිනම් එය ගණනය කරමු
+    const totalPrice = order.total_price || order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    return (
+      <div key={order.order_id} className="bg-white rounded-xl shadow-md p-6 mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">Order #{order.order_id}</h3>
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+            status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+          }`}>
+            {status === 'PENDING' ? <Clock size={16} /> : <CheckCircle size={16} />}
+            {status === 'PENDING' ? 'Pending' : 'Completed'}
+          </div>
+        </div>
+        <p className="text-gray-600 mb-2">
+          <span className="font-semibold">Date:</span> {new Date(order.order_date).toLocaleDateString()}
+        </p>
+        <p className="text-gray-600 mb-4">
+          <span className="font-semibold">Total:</span> Rs. {totalPrice.toFixed(2)}
+        </p>
+        <div className="border-t border-gray-200 pt-4">
+          <h4 className="text-lg font-semibold text-gray-700 mb-2">Items:</h4>
+          <ul className="list-disc list-inside space-y-1">
+            {order.items.map((item, index) => (
+              <li key={index} className="text-gray-600 text-sm">
+                {item.product_name} x {item.quantity} - Rs. {(item.price * item.quantity).toFixed(2)}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-      <p className="text-gray-600 mb-2">
-        <span className="font-semibold">Date:</span> {new Date(order.order_date).toLocaleDateString()}
-      </p>
-      <p className="text-gray-600 mb-4">
-        <span className="font-semibold">Total:</span> Rs. {order.total_price.toFixed(2)}
-      </p>
-      <div className="border-t border-gray-200 pt-4">
-        <h4 className="text-lg font-semibold text-gray-700 mb-2">Items:</h4>
-        <ul className="list-disc list-inside space-y-1">
-          {order.items.map((item, index) => (
-            <li key={index} className="text-gray-600 text-sm">
-              {item.product_name} x {item.quantity} - Rs. {(item.price * item.quantity).toFixed(2)}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
