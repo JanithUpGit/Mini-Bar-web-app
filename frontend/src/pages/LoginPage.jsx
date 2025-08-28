@@ -8,36 +8,33 @@ const LoginPage = () => {
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setMessage('Loading...');
-    setIsError(false);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setMessage('Loading...');
+  setIsError(false);
 
-    try {
-      // Calling the authAPI.login function
-      const response = await authAPI.login({ email, password });
-
-      if (response.success) {
-        setMessage('Login successful! 🎉 Redirecting...');
-        setIsError(false);
-
-        // Example: Save token in localStorage if provided
-        if (response.token) {
-          localStorage.setItem('authToken', response.token);
-        }
-
-        // Example: redirect after login
-        // window.location.href = '/dashboard';
-      } else {
-        setMessage(response.error || 'Login failed. Please check your credentials.');
-        setIsError(true);
-      }
-    } catch (error) {
-      setMessage(error.error || 'Failed to connect to the server.');
+  try {
+    console.log(email,password);
+    const response = await authAPI.login({ email, password });
+    
+    if (response.status === 200) {
+      // Login සාර්ථක නම්
+      setMessage('සාර්ථකව ප්‍රවේශ විය! 🎉');
+      setIsError(false);
+      // මෙහිදී redirect කිරීමේ කේතය එකතු කරන්න
+    } else {
+      // මෙය ප්‍රධාන වශයෙන් අවශ්‍ය නැත
+      setMessage(response.data.error || 'Login failed. Please check your credentials.');
       setIsError(true);
-      console.error('Login error:', error);
     }
-  };
+  } catch (error) {
+    // 400 දෝෂයක් වැනි අසාර්ථක ප්‍රතිචාර මෙහිදී හසුවෙයි.
+    // backend එකෙන් ලැබෙන නිවැරදි දෝෂ පණිවිඩය පෙන්වයි.
+    setMessage(error.response?.data?.error || 'Login failed. Please check your credentials.');
+    setIsError(true);
+    console.error('Login error:', error);
+  }
+};
 
   return (
     
