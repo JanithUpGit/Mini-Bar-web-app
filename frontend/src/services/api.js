@@ -28,9 +28,10 @@ export const authAPI = {
   logout: () => api.post('/users/logout')
 };
 
-export const itemAPI = {
-  getAllItems: () => api.get('/items/all'),
-  getItem: (id) => api.get(`/items/${id}`),
+export const productAPI = {
+  getAllProducts: () => api.get('products'),
+  getAvailableProducts: () => api.get('products/available'),
+  getProduct: (id) => api.get(`/products/${id}`),
   createItem: (itemData) => api.post('/items/create', itemData),
   updateItem: (id, itemData) => api.put(`/items/${id}/update`, itemData),
   deleteItem: (id) => api.delete(`/items/${id}/delete`),

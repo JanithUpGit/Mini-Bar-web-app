@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { authAPI } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/loginNav";
 
 const RegisterPage = () => {
   const [userName, setUserName] = useState("");
@@ -46,6 +47,7 @@ const RegisterPage = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+        <Navbar/>
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
         <h2 className="text-3xl font-bold mb-6 text-gray-800">Register</h2>
         <form onSubmit={handleRegister} className="space-y-4">

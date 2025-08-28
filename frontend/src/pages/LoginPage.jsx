@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { authAPI } from '../services/api';
-import Navbar from '../components/nav';
+import Navbar from '../components/loginNav';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
 const handleLogin = async (e) => {
   e.preventDefault();
@@ -21,7 +23,7 @@ const handleLogin = async (e) => {
       // Login සාර්ථක නම්
       setMessage('සාර්ථකව ප්‍රවේශ විය! 🎉');
       setIsError(false);
-      // මෙහිදී redirect කිරීමේ කේතය එකතු කරන්න
+      navigate("/");
     } else {
       // මෙය ප්‍රධාන වශයෙන් අවශ්‍ය නැත
       setMessage(response.data.error || 'Login failed. Please check your credentials.');
