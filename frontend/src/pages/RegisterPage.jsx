@@ -16,7 +16,7 @@ const RegisterPage = () => {
     setIsError(false);
 
     try {
-      // The data to be sent to the backend
+        
       const userData = {
         user_name: userName,
         email: email,
