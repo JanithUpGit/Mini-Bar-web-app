@@ -5,23 +5,26 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboardPage from './pages/AdminDashbordPage';
 import RegisterPage from './pages/RegisterPage';
 import { CartProvider } from '../store/CartContext';
-import { AuthProvider } from '../store/AuthContext';
+import { AuthProvider, useAuth } from '../store/AuthContext';
 import StorePage from './pages/StorePage';
 import OrdersPage from './pages/OrderPage';
-const isAuthenticated = () => {
-  // මෙහිදී ඔබගේ backend API එකට request එකක් යවා
-  // පරිශීලකයාගේ session එක check කළ යුතුය.
-  // දැනට, මෙය සරලව true හෝ false ලෙස සලකමු.
-  // උදා: cookies check කිරීම
-  const isLoggedIn = document.cookie.includes('connect.sid'); 
-  return isLoggedIn;
-};
 
 // Protected route component එක
-const ProtectedRoute = ({ children }) => {
-  if (!isAuthenticated()) {
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
+  
+  if (requiredRole && user.role !== requiredRole) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 };
 
@@ -37,11 +40,11 @@ function App() {
         <Route path="/store" element={<StorePage />} />
         <Route path="/orders" element={ <ProtectedRoute><OrdersPage/> </ProtectedRoute>} />
         
-        
+        {/* Dashboard එකට ඇතුළු වීමට ADMIN role එක අවශ්‍ය වේ */}
         <Route 
           path="/dashboard" 
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="ADMIN">
               <AdminDashboardPage/>
             </ProtectedRoute>
           } 

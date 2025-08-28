@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Menu, X, ShoppingCart } from "lucide-react"; 
+
 import { useCart } from "../../store/CartContext";
 import { useAuth } from "../../store/AuthContext";
 
