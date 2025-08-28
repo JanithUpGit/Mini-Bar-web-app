@@ -1,16 +1,34 @@
 // src/context/CartContext.jsx
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 // Context එක නිර්මාණය කිරීම
 const CartContext = createContext();
 
 // CartProvider component එක නිර්මාණය කිරීම
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+    
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const storedCartItems = localStorage.getItem('cartItems');
+      return storedCartItems ? JSON.parse(storedCartItems) : [];
+    } catch (error) {
+      console.error("Failed to load cart from localStorage", error);
+      return [];
+    }
+  });
 
+  useEffect(() => {
+    try {
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Failed to save cart to localStorage", error);
+    }
+  }, [cartItems]);
 
+  // භාණ්ඩයක් cart එකට එකතු කිරීම
   const addToCart = (product) => {
     setCartItems((prevItems) => {
+      // භාණ්ඩය දැනටමත් cart එකේ තිබේදැයි පරීක්ෂා කිරීම
       const existingItem = prevItems.find((item) => item.product_id === product.product_id);
       if (existingItem) {
         // තිබේ නම්, quantity එක වැඩි කිරීම
@@ -48,7 +66,7 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-
+// පහසුවෙන් Context එක භාවිතා කිරීම සඳහා custom hook එකක්
 export const useCart = () => {
   return useContext(CartContext);
 };
