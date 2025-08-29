@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 import Navbar from "../components/nav";
-import { useCart } from "../store/CartContext";
 import { apiService } from "../services/api";
 import ProductCard from "../components/ProductCard";
 import Header from "../components/Header";
+import CategoryCard from "../components/CategoryCard";
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
@@ -40,7 +40,7 @@ const HomePage = () => {
 
   return (
     <>
-      <div className="h-16 w-full"></div>
+
       <Navbar />
       <div className="bg-gray-50">
         <Header />
@@ -64,28 +64,7 @@ const HomePage = () => {
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {categories.map((cat) => (
-                  <div
-                    key={cat.category_id}
-                    className="relative shadow-lg rounded-xl overflow-hidden cursor-pointer h-64 transform -skew-x-6 hover:scale-105 transition"
-                  >
-                    {/* Inner wrapper to cancel skew */}
-                    <div className="absolute inset-0 transform w-70 skew-x-6">
-                      {/* Background Image */}
-                      <div
-                        className="absolute inset-0 bg-cover bg-center scale-125 transition-transform duration-300 group-hover:scale-150"
-                        style={{ backgroundImage: `url(${cat.image_url})` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70"></div>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="relative h-full flex items-end justify-center p-4 z-10 transform skew-x-6">
-                      <h3 className="text-lg font-semibold text-white text-center">
-                        {cat.category_name}
-                      </h3>
-                    </div>
-                  </div>
+                  <CategoryCard category={cat} key={cat.category_id}/>
                 ))}
               </div>
             </section>
@@ -95,9 +74,9 @@ const HomePage = () => {
               <h2 className="text-3xl font-bold text-gray-800 mb-6">
                 Featured Products
               </h2>
-              <div className="flex overflow-x-auto gap-6 pb-4">
+              <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory">
                 {products.slice(0, 10).map((product) => (
-                  <div className="flex-none  ">
+                  <div className="flex-none w-64 snap-center">
                     <ProductCard product={product} key={product.product_id} />
                   </div>
                 ))}

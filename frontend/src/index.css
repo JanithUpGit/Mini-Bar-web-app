@@ -1,30 +1,47 @@
 @import "tailwindcss";
 
-/* public/index.css or global.css */
+/* global.css or index.css */
+@theme {
+  /* Add new custom breakpoints  
+     Must use consistent units like rem or px */
+  --breakpoint-xs: 100rem;     /* e.g., ~480px */
+  --breakpoint-2xl: 100rem;   /* override default 2xl (~1600px) */
+  --breakpoint-3xl: 120rem;   /* new largest breakpoint */
+}
+
+
+/* Playfair Display Regular */
 @font-face {
   font-family: 'Playfair Display';
-  font-display: swap;
   src: url('/fonts/PlayfairDisplay-Regular.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* Playfair Display Bold */
 @font-face {
   font-family: 'Playfair Display';
-  font-display: swap;
   src: url('/fonts/PlayfairDisplay-Bold.woff2') format('woff2');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* Oswald Regular */
 @font-face {
   font-family: 'Oswald';
-  font-display: swap;
   src: url('/fonts/Oswald-Regular.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* Oswald Bold */
 @font-face {
   font-family: 'Oswald';
-  font-display: swap;
   src: url('/fonts/Oswald-Bold.woff2') format('woff2');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }

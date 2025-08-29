@@ -20,6 +20,7 @@ function AppContent() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/store" element={<StorePage />} />
+      <Route path="/store/:categoryId" element={<StorePage />} /> {/* නව Route එක */}
       <Route path="/orders" element={<OrdersPage />} />
       <Route path="/dashboard" element={<AdminDashboardPage />} />
       <Route path="*" element={<h1>404</h1>} />

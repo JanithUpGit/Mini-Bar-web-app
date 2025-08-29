@@ -35,7 +35,7 @@ const Navbar = () => {
                 className="h-40 pt-3 w-auto object-contain"
               />
               <span className="ml-2 text-2xl font-bold text-red-500 hover:text-red-400 transition">
-                Mini Bar
+                Sarasavi Madura
               </span>
             </Link>
           </div>
