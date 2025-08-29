@@ -1,22 +1,42 @@
+// src/pages/OrdersPage.jsx
+
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/nav";
 import { apiService } from "../services/api";
-import { Package, CheckCircle, Clock } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // useNavigate import කරගන්න
+import { Package, CheckCircle, Clock, XCircle, Edit2, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
-  const { user } = null;
-  const navigate = useNavigate(); // useNavigate hook එක භාවිතා කරන්න
-  
+  const handleCancelOrder = async (orderId) => {
+    if (window.confirm("ඔබට මෙම ඇණවුම අවලංගු කිරීමට අවශ්‍ය බව තහවුරු කරන්න?")) {
+      try {
+        await apiService.orders.cancelOrder(orderId);
+        const response = await apiService.orders.getUserOrders(user.id);
+        setOrders(response.data);
+        alert(`Order #${orderId} successfully cancelled.`);
+      } catch (err) {
+        console.error("Failed to cancel order:", err);
+        alert("ඇණවුම අවලංගු කිරීමේදී දෝෂයක් සිදුවිය. පසුව නැවත උත්සාහ කරන්න.");
+      }
+    }
+  };
+
+  const handleEditOrder = (orderId) => {
+    alert(`ඇණවුම #${orderId} සංස්කරණය කිරීමට සූදානම්...`);
+    // මෙහිදී ඔබව වෙනම සංස්කරණ පිටුවකට යොමු කළ හැක
+    // navigate(`/orders/${orderId}/edit`);
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
-      // පරිශීලකයෙක් login වී ඇත්දැයි පරීක්ෂා කරමු
       if (!user) {
-        // user නොමැති නම්, login පිටුවට redirect කරමු
         navigate('/login');
         return; 
       }
@@ -31,45 +51,70 @@ const OrdersPage = () => {
         setLoading(false);
       }
     };
-
     fetchOrders();
-  }, [user, navigate]); // user සහ navigate dependency list එකට එකතු කරන්න
+  }, [user, navigate]); 
 
-  // Pending සහ Completed orders වෙන් කරමු
   const pendingOrders = orders.filter(order => order.status === 'PENDING');
+  const shippedOrders = orders.filter(order => order.status === 'SHIPPED');
   const completedOrders = orders.filter(order => order.status === 'COMPLETED');
+  const cancelledOrders = orders.filter(order => order.status === 'CANCELLED');
+  
+  const getStatusDisplay = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return { text: 'Pending', icon: <Clock size={16} />, color: 'bg-yellow-100 text-yellow-800' };
+      case 'SHIPPED':
+        return { text: 'Shipped', icon: <Package size={16} />, color: 'bg-blue-100 text-blue-800' };
+      case 'COMPLETED':
+        return { text: 'Completed', icon: <CheckCircle size={16} />, color: 'bg-green-100 text-green-800' };
+      case 'CANCELLED':
+        return { text: 'Cancelled', icon: <XCircle size={16} />, color: 'bg-red-100 text-red-800' };
+      default:
+        return { text: status, icon: null, color: 'bg-gray-100 text-gray-800' };
+    }
+  };
 
-  const renderOrderCard = (order, status) => {
-    // total_price එක නැතිනම් එය ගණනය කරමු
-    const totalPrice = order.total_price || order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
+  const renderOrderCard = (order) => {
+    const statusInfo = getStatusDisplay(order.status);
+    const totalPrice = order.total_amount;
+
     return (
       <div key={order.order_id} className="bg-white rounded-xl shadow-md p-6 mb-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-gray-800">Order #{order.order_id}</h3>
-          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-            status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
-          }`}>
-            {status === 'PENDING' ? <Clock size={16} /> : <CheckCircle size={16} />}
-            {status === 'PENDING' ? 'Pending' : 'Completed'}
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+            {statusInfo.icon}
+            {statusInfo.text}
           </div>
         </div>
         <p className="text-gray-600 mb-2">
-          <span className="font-semibold">Date:</span> {new Date(order.order_date).toLocaleDateString()}
+          <span className="font-semibold">Date:</span> {new Date(order.order_datetime).toLocaleDateString()}
         </p>
         <p className="text-gray-600 mb-4">
-          <span className="font-semibold">Total:</span> Rs. {totalPrice.toFixed(2)}
+          <span className="font-semibold">Total:</span> Rs. {parseFloat(totalPrice).toFixed(2)}
         </p>
         <div className="border-t border-gray-200 pt-4">
-          <h4 className="text-lg font-semibold text-gray-700 mb-2">Items:</h4>
-          <ul className="list-disc list-inside space-y-1">
-            {order.items.map((item, index) => (
-              <li key={index} className="text-gray-600 text-sm">
-                {item.product_name} x {item.quantity} - Rs. {(item.price * item.quantity).toFixed(2)}
-              </li>
-            ))}
-          </ul>
+          <h4 className="text-lg font-semibold text-gray-700 mb-2">Delivery Address:</h4>
+          <p className="text-gray-600 text-sm">{order.delivery_address}</p>
         </div>
+
+        {/* 'PENDING' තත්ත්වයේ ඇණවුම් සඳහා පමණක් බොත්තම් පෙන්වන්න */}
+        {order.status === 'PENDING' && (
+          <div className="mt-4 flex space-x-2 justify-end">
+            <button
+              onClick={() => handleEditOrder(order.order_id)}
+              className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Edit2 size={16} /> Edit Address
+            </button>
+            <button
+              onClick={() => handleCancelOrder(order.order_id)}
+              className="flex items-center gap-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              <X size={16} /> Cancel Order
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -94,35 +139,50 @@ const OrdersPage = () => {
           </div>
         )}
         {!loading && !error && (
-          <>
-            {/* Pending Orders */}
+          <div className="max-w-4xl mx-auto">
             <section className="mb-12">
               <h2 className="text-3xl font-bold text-gray-700 mb-6 flex items-center gap-3">
-                <Clock size={28} /> Pending Orders
+                <Clock size={28} /> Ongoing Orders
               </h2>
-              {pendingOrders.length > 0 ? (
-                pendingOrders.map(order => renderOrderCard(order, 'PENDING'))
+              {[...pendingOrders, ...shippedOrders].length > 0 ? (
+                [...pendingOrders, ...shippedOrders].map(renderOrderCard)
               ) : (
                 <p className="text-gray-500 text-lg">
-                  ඔබගේ pending orders නොමැත.
+                  ඔබගේ ongoing orders නොමැත.
                 </p>
               )}
             </section>
+            
+            <hr className="my-8 border-gray-300" />
 
-            {/* Completed Orders */}
-            <section>
+            <section className="mb-12">
               <h2 className="text-3xl font-bold text-gray-700 mb-6 flex items-center gap-3">
                 <CheckCircle size={28} /> Completed Orders
               </h2>
               {completedOrders.length > 0 ? (
-                completedOrders.map(order => renderOrderCard(order, 'COMPLETED'))
+                completedOrders.map(renderOrderCard)
               ) : (
                 <p className="text-gray-500 text-lg">
                   ඔබගේ completed orders නොමැත.
                 </p>
               )}
             </section>
-          </>
+
+            <hr className="my-8 border-gray-300" />
+
+            <section>
+              <h2 className="text-3xl font-bold text-gray-700 mb-6 flex items-center gap-3">
+                <XCircle size={28} /> Cancelled Orders
+              </h2>
+              {cancelledOrders.length > 0 ? (
+                cancelledOrders.map(renderOrderCard)
+              ) : (
+                <p className="text-gray-500 text-lg">
+                  ඔබගේ cancelled orders නොමැත.
+                </p>
+              )}
+            </section>
+          </div>
         )}
       </div>
     </>
