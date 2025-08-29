@@ -42,7 +42,7 @@ const HomePage = () => {
      
       
       <div className="h-16 w-full"></div> 
-      
+      <Navbar/>
       <div className="bg-gray-50">
         <section className="bg-gradient-to-r from-blue-600 to-green-500 text-white py-20 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">

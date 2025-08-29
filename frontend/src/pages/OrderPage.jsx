@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/nav";
 import { apiService } from "../services/api";
-import { useAuth } from '../store/AuthContext';
 import { Package, CheckCircle, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // useNavigate import කරගන්න
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Auth context එකෙන් user ගේ තොරතුරු ලබා ගනිමු
-  const { user } = useAuth();
+  const { user } = null;
+  const navigate = useNavigate(); // useNavigate hook එක භාවිතා කරන්න
   
   useEffect(() => {
     const fetchOrders = async () => {
       // පරිශීලකයෙක් login වී ඇත්දැයි පරීක්ෂා කරමු
       if (!user) {
-        setLoading(false);
-        setError("ඔබගේ orders බැලීම සඳහා ඔබ log in විය යුතුය.");
-        return;
+        // user නොමැති නම්, login පිටුවට redirect කරමු
+        navigate('/login');
+        return; 
       }
       
       try {
@@ -33,7 +33,7 @@ const OrdersPage = () => {
     };
 
     fetchOrders();
-  }, [user]); // user state එක වෙනස් වන විට නැවත දත්ත ලබා ගනිමු
+  }, [user, navigate]); // user සහ navigate dependency list එකට එකතු කරන්න
 
   // Pending සහ Completed orders වෙන් කරමු
   const pendingOrders = orders.filter(order => order.status === 'PENDING');

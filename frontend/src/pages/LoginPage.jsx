@@ -4,7 +4,7 @@ import bgImage from "../assets/images/Login_Register_BG.png";
 import { authAPI } from '../services/api';
 import Navbar from '../components/loginNav';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../store/AuthContext'; // useAuth hook එක import කරගන්න
+import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,8 +12,8 @@ const LoginPage = () => {
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
+  const {login} = useAuth(); 
 
-  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,10 +24,8 @@ const LoginPage = () => {
       console.log(email, password);
       const response = await authAPI.login({ email, password });
       
-      if (response.status === 200) {
-        const { user } = response.data;
-        
-        login(user); 
+      if (response.status === 200) {        
+        login(); 
 
         setMessage('සාර්ථකව ප්‍රවේශ විය! 🎉');
         setIsError(false);

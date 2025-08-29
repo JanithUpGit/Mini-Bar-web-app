@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./store/CartContext";
-import { AuthProvider, useAuth } from "./store/AuthContext"; 
+import { AuthProvider} from "./store/AuthContext"; 
+import { useAuth } from "./hooks/useAuth";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboardPage from "./pages/AdminDashbordPage";

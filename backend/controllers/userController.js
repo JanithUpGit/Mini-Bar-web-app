@@ -130,7 +130,6 @@ exports.logoutUser = (req, res) => {
 };
 
 exports.profile = (req, res) => {
-  
   if (req.session.user) {
     res.status(200).json({ user: req.session.user });
   } else {

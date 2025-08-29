@@ -11,8 +11,7 @@ router.get('/', isAuthenticated, isAdmin, productController.getProducts);
 // Create a new product (Admin access)
 router.post('/', isAuthenticated, isAdmin, productController.createProduct);
 
-// Get ONLY available products (Authenticated user access)
-router.get('/available', isAuthenticated, productController.getAvailableProducts);
+router.get('/available', productController.getAvailableProducts);
 
 
 // Get a single product by ID (Admin access)

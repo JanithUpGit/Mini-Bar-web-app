@@ -11,7 +11,7 @@ router.post('/register', userController.createUser);
 
 // Protected endpoints - require authentication
 router.post('/logout', isAuthenticated, userController.logoutUser);
-router.get('/profile', isAuthenticated, userController.profile);
+router.get('/profile', isAuthenticated, userController.profile); 
 router.get('/', isAuthenticated, isAdmin, userController.getUsers);
 router.get('/:id', isAuthenticated, isAdmin, userController.getUserById);
 router.put('/:id', isAuthenticated, isAdmin, userController.updateUser);

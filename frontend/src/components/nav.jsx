@@ -1,22 +1,28 @@
 import React, { useState } from "react";
-import { Menu, X, ShoppingCart } from "lucide-react"; 
-
+import { Menu, X, ShoppingCart, LogIn, LogOut } from "lucide-react";
 import { useCart } from "../store/CartContext";
-import { useAuth } from "../store/AuthContext";
-
+import { useAuth } from "../hooks/useAuth";// AuthContext එක ආනයනය කරන්න
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { getTotalItems } = useCart();
   const cartItemCount = getTotalItems();
-  
-  const { user } = useAuth();
+  const { user } = useAuth(); // useAuth හුක් එක භාවිත කරන්න
   console.log(user);
   const isAdmin = user?.role === 'ADMIN';
 
+  const getInitials = (name) => {
+    if (!name) return 'U'; // Display 'U' if no name is available
+    const parts = name.split(' ');
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name[0].toUpperCase();
+  };
+
   return (
     <nav className="bg-white shadow-lg fixed w-full top-0 left-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           
           {/* Logo */}
@@ -24,16 +30,17 @@ const Navbar = () => {
             Mini Bar
           </div>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu and Auth */}
           <div className="hidden md:flex space-x-8 items-center">
+            {/* Navigation Links */}
             <a href="/" className="text-gray-700 hover:text-blue-600 transition">Home</a>
             <a href="/offers" className="text-gray-700 hover:text-blue-600 transition">Offers</a>
-             <a href="/store" className="text-gray-700 hover:text-blue-600 transition">Store</a>
+            <a href="/store" className="text-gray-700 hover:text-blue-600 transition">Store</a>
             <a href="/orders" className="text-gray-700 hover:text-blue-600 transition">Orders</a>
             <a href="/contact" className="text-gray-700 hover:text-blue-600 transition">Contact</a>
             
             
-            {/* Admin පමණක් Dashboard දකිනු ඇත */}
+            {/* Show Dashboard only to admins */}
             {isAdmin && (
               <a href="/dashboard" className="text-gray-700 hover:text-blue-600 transition">Dashboard</a>
             )}
@@ -49,9 +56,28 @@ const Navbar = () => {
                 )}
               </a>
             </div>
+
+            {/* Login / User avatar */}
+            {user ? (
+              <a 
+                href="/profile" 
+                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition ml-10"
+                title={user.user_email|| 'User profile'}
+              >
+                <div className="h-10 w-10 bg-blue-600 text-white font-bold rounded-full flex items-center justify-center border-2 border-blue-600">
+                  {getInitials(user.user_email)}
+                </div>
+                <p className="ml-2">{user.user_email}</p>
+              </a>
+              
+            ) : (
+              <a href="/login" className="text-blue-600 hover:underline font-medium">
+                Login
+              </a>
+            )}
           </div>
 
-          {/* Mobile Hamburger and Cart Icon */}
+          {/* Mobile hamburger and cart icon */}
           <div className="md:hidden flex items-center space-x-4">
             {/* Cart Icon for mobile */}
             <div className="relative">
@@ -64,6 +90,24 @@ const Navbar = () => {
                 )}
               </a>
             </div>
+            
+            {/* Mobile login / user avatar */}
+            {user ? (
+              <a 
+                href="/profile" 
+                className="focus:outline-none"
+                title={user.user_email || 'User profile'}
+              >
+                <div className="h-10 w-10 bg-blue-600 text-white font-bold rounded-full flex items-center justify-center border-2 border-blue-600">
+                  {getInitials(user.name || user.email)}
+                </div>
+              </a>
+            ) : (
+              <a href="/login" className="text-blue-600 hover:underline font-medium">
+                Login
+              </a>
+            )}
+            
             <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700 focus:outline-none">
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -71,7 +115,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile dropdown */}
       {isOpen && (
         <div className="md:hidden bg-white border-t shadow-lg">
           <a href="/" className="block px-4 py-2 text-gray-700 hover:bg-blue-100">Home</a>
