@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { authAPI } from "../services/api"; // authAPI එක නිවැරදි මාර්ගයෙන් import කරන්න
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

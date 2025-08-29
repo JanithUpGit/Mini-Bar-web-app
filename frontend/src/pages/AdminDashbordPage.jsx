@@ -1,7 +1,11 @@
-
+// src/pages/AdminDashboard.jsx
 
 import React, { useState } from "react";
 import { Users, Package, ShoppingCart, Menu } from "lucide-react";
+// Components ආනයනය කිරීම
+import ManageUsers from '../components/admin/ManageUsers';
+import ManageProducts from '../components/admin/ManageProducts';
+import ManageOrders from '../components/admin/ManageOrders';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("users");
@@ -9,11 +13,11 @@ export default function AdminDashboard() {
   const renderContent = () => {
     switch (activeTab) {
       case "users":
-        return <div className="p-4">👤 Manage Users content here</div>;
+        return <ManageUsers />;
       case "products":
-        return <div className="p-4">📦 Manage Products content here</div>;
+        return <ManageProducts />;
       case "orders":
-        return <div className="p-4">🛒 Manage Orders content here</div>;
+        return <ManageOrders />;
       default:
         return <div className="p-4">Select an option</div>;
     }

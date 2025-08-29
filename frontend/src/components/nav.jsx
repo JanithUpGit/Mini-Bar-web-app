@@ -10,7 +10,8 @@ const Navbar = () => {
   const { getTotalItems } = useCart();
   const cartItemCount = getTotalItems();
   const { user } = useAuth();
-  const isAdmin = user?.role === 'ADMIN';
+  console.log(user);
+  const isAdmin = user?.user_role === 'ADMIN';
 
   const getInitials = (name) => {
     if (!name) return 'U';
