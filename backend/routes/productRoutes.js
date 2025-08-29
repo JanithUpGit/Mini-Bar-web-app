@@ -13,7 +13,6 @@ router.post('/', isAuthenticated, isAdmin, productController.createProduct);
 
 router.get('/available', productController.getAvailableProducts);
 
-
 // Get a single product by ID (Admin access)
 router.get('/:id', isAuthenticated, isAdmin, productController.getProductById);
 

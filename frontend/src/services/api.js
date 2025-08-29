@@ -39,16 +39,16 @@ export const productAPI = {
   deleteProduct: (id) => api.delete(`/products/${id}`),
 };
 
-// ඇණවුම් API calls
+// src/services/api.js හෝ src/api/orderApi.js
+
 export const orderAPI = {
   createOrder: (orderData) => api.post('/orders', orderData),
   getAllOrders: () => api.get('/orders'),
   getOrder: (id) => api.get(`/orders/${id}`),
-  updateOrderStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
+  updateOrderStatus: (orderData) => api.put(`/orders/status`, orderData),
   getUserOrders: () => api.get(`/orders/my-orders`),
 };
 
-// ප්‍රවර්ග API calls
 export const categoryAPI = {
   getAllCategories: () => api.get('/categories'),
   getCategory: (id) => api.get(`/categories/${id}`),

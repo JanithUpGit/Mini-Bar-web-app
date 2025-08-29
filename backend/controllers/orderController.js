@@ -27,19 +27,20 @@ exports.createOrder = (req, res) => {
   });
 };
 
-// සියලුම orders ලබාගන්න
+// සියලුම orders ලබාගන්න (දැන් භාණ්ඩ තොරතුරු ද සමඟින්)
 exports.getOrders = (req, res) => {
-  Order.getAll((err, results) => {
+  // Order.getAll() වෙනුවට Order.getAllWithItems() භාවිතා කර ඇත
+  Order.getAllWithItems((err, results) => {
     if (err) {
-      return res.status(500).json({ error: 'Failed to retrieve orders.' });
+      return res.status(500).json({ error: 'Failed to retrieve orders with items.' });
     }
     res.json(results);
   });
 };
-
 // Admin ට order status එක update කිරීමට
 exports.updateOrderStatus = (req, res) => {
   const { orderId, status } = req.body;
+  console.log(orderId,status);
   if (!orderId || !status) {
     return res.status(400).json({ error: 'Order ID and status are required.' });
   }
@@ -63,11 +64,12 @@ exports.completeOrder = (req, res) => {
 };
 
 
+// User ගේ orders ලබාගන්න (දැන් භාණ්ඩ තොරතුරු ද සමඟින්)
 exports.getUserOrders = (req, res) => {
   const userId = req.user.user_id; 
-  Order.getOrdersByUser(userId, (err, results) => {
+  Order.getOrdersWithItemsByUser(userId, (err, results) => {
     if (err) {
-      return res.status(500).json({ error: 'Failed to retrieve user orders.' });
+      return res.status(500).json({ error: 'Failed to retrieve user orders with items.' });
     }
     res.json(results);
   });
@@ -105,4 +107,5 @@ exports.cancelOrder = (req, res) => {
     }
     res.json({ message: 'Order cancelled successfully.' });
   });
+
 };

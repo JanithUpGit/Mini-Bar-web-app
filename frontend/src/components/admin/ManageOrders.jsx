@@ -2,21 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { apiService } from "../../services/api";
-import {
-  CheckCircle,
-  Clock,
-  Package,
-  XCircle,
-  ChevronDown,
-  Eye,
-  Edit,
-} from "lucide-react";
+import { CheckCircle, Clock, Package, XCircle, ChevronDown, Eye } from "lucide-react";
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("ALL"); // පෙරහන් තත්ත්වය
+  const [filter, setFilter] = useState("ALL");
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -39,44 +31,25 @@ const ManageOrders = () => {
   const getStatusDisplay = (status) => {
     switch (status) {
       case "PENDING":
-        return {
-          text: "Pending",
-          icon: <Clock size={16} />,
-          color: "bg-yellow-100 text-yellow-800",
-        };
+        return { text: "Pending", icon: <Clock size={16} />, color: "bg-yellow-100 text-yellow-800" };
       case "SHIPPED":
-        return {
-          text: "Shipped",
-          icon: <Package size={16} />,
-          color: "bg-blue-100 text-blue-800",
-        };
+        return { text: "Shipped", icon: <Package size={16} />, color: "bg-blue-100 text-blue-800" };
       case "COMPLETED":
-        return {
-          text: "Completed",
-          icon: <CheckCircle size={16} />,
-          color: "bg-green-100 text-green-800",
-        };
+        return { text: "Completed", icon: <CheckCircle size={16} />, color: "bg-green-100 text-green-800" };
       case "CANCELLED":
-        return {
-          text: "Cancelled",
-          icon: <XCircle size={16} />,
-          color: "bg-red-100 text-red-800",
-        };
+        return { text: "Cancelled", icon: <XCircle size={16} />, color: "bg-red-100 text-red-800" };
       default:
         return { text: status, icon: null, color: "bg-gray-100 text-gray-800" };
     }
   };
 
-  const handleUpdateStatus = async (orderId, newStatus) => {
-    if (
-      window.confirm(
-        `ඇණවුම #${orderId} හි තත්ත්වය '${newStatus}' ලෙස වෙනස් කරනවාද?`
-      )
-    ) {
+const handleUpdateStatus = async (orderId, newStatus) => {
+    if (window.confirm(`ඇණවුම #${orderId} හි තත්ත්වය '${newStatus}' ලෙස වෙනස් කරනවාද?`)) {
       try {
-        await apiService.orders.updateOrderStatus(orderId, {
-          status: newStatus,
-        });
+        const orderData = { orderId : orderId, status : newStatus}
+        console.log(orderData);
+        await apiService.orders.updateOrderStatus(orderData);
+        
         const updatedOrders = orders.map((order) =>
           order.order_id === orderId ? { ...order, status: newStatus } : order
         );
@@ -90,7 +63,6 @@ const ManageOrders = () => {
   };
 
   const filteredOrders = orders.filter((order) => {
-    console.log(order);
     if (filter === "ALL") return true;
     return order.status === filter;
   });
@@ -105,11 +77,11 @@ const ManageOrders = () => {
       return (
         <div
           className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50"
-          onClick={() => setShowModal(false)} // පිටත ක්ලික් කළ විට Modal එක වැසීමට
+          onClick={() => setShowModal(false)}
         >
           <div
             className="relative p-8 bg-white w-full max-w-2xl rounded-lg shadow-xl"
-            onClick={(e) => e.stopPropagation()} // Modal එක ඇතුළත ක්ලික් කිරීමෙන් වැසීම වැළැක්වීමට
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
@@ -120,10 +92,10 @@ const ManageOrders = () => {
             <h3 className="text-2xl font-bold mb-4">
               Order #{selectedOrder.order_id} Details
             </h3>
-            <div className="grid grid-cols-2 gap-4 text-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
               <p>
                 <span className="font-semibold">User Name:</span>{" "}
-                {selectedOrder.user_name}
+                {selectedOrder.user_name || 'N/A'}
               </p>
               <p>
                 <span className="font-semibold">Date:</span>{" "}
@@ -141,22 +113,42 @@ const ManageOrders = () => {
                 <p className="font-semibold">Delivery Address:</p>
                 <p>{selectedOrder.delivery_address}</p>
               </div>
-              <div className="col-span-2 mt-4">
-                <h4 className="text-lg font-bold mb-2">Items:</h4>
-                <ul className="list-disc list-inside space-y-1">
-                  {selectedOrder.items?.map((item, index) => (
-                    <li key={index}>
-                      {item.product_name} x {item.quantity} - Rs.{" "}
-                      {(parseFloat(item.price) * item.quantity).toFixed(2)}
-                    </li>
-                  ))}
-                </ul>
+            </div>
+            
+            <div className="mt-8">
+              <h4 className="text-lg font-bold mb-2">Items:</h4>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {selectedOrder.items?.map((item, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {item.product_name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs. {parseFloat(item.unit_price).toFixed(2)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          Rs. {(parseFloat(item.unit_price) * item.quantity).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
       );
     }
+    return null; // Modal එක නොපෙන්වීමට
   };
 
   if (loading) {
@@ -187,29 +179,17 @@ const ManageOrders = () => {
           </div>
         </div>
       </div>
-
+      
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Order ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Total Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -221,9 +201,7 @@ const ManageOrders = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       #{order.order_id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.user_name}
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.user_name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(order.order_datetime).toLocaleDateString()}
                     </td>
@@ -231,47 +209,39 @@ const ManageOrders = () => {
                       Rs. {parseFloat(order.total_amount).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.color}`}
-                      >
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.color}`}>
                         {statusInfo.text}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button
-                        onClick={() => handleViewOrder(order)}
-                        className="text-blue-600 hover:text-blue-900"
-                        title="View Details"
-                      >
+                         <button onClick={() => handleViewOrder(order)} className="text-blue-600 hover:text-blue-900" title="View Details">
                         <Eye size={20} />
                       </button>
-                      <button
-                        onClick={() =>
-                          handleUpdateStatus(order.order_id, "SHIPPED")
-                        }
-                        className="text-blue-600 hover:text-blue-900"
-                        title="Mark as Shipped"
-                      >
+                     {
+                        order.status != "SHIPED" &&
+                         <button onClick={() => handleUpdateStatus(order.order_id, 'SHIPPED')} className="text-blue-600 hover:text-blue-900" title="Mark as Shipped">
                         <Package size={20} />
                       </button>
-                      <button
-                        onClick={() =>
-                          handleUpdateStatus(order.order_id, "COMPLETED")
-                        }
-                        className="text-green-600 hover:text-green-900"
-                        title="Mark as Completed"
-                      >
+
+                     }
+                     {
+                        order.status != "COMPLETED" &&
+                          <button onClick={() => handleUpdateStatus(order.order_id, 'COMPLETED')} className="text-green-600 hover:text-green-900" title="Mark as Completed">
                         <CheckCircle size={20} />
                       </button>
-                      <button
-                        onClick={() =>
-                          handleUpdateStatus(order.order_id, "CANCELLED")
-                        }
-                        className="text-red-600 hover:text-red-900"
-                        title="Mark as Cancelled"
-                      >
+
+                     }
+                     {
+                        order.status != "CANCELLED" &&
+                          <button onClick={() => handleUpdateStatus(order.order_id, 'CANCELLED')} className="text-red-600 hover:text-red-900" title="Mark as Cancelled">
                         <XCircle size={20} />
                       </button>
+
+                     }
+
+                      
+                     
+                     
                     </td>
                   </tr>
                 );

@@ -2,6 +2,7 @@
 
 const Product = require("../models/Product");
 
+// සියලුම නිෂ්පාදන ලබාගන්න
 exports.getProducts = (req, res) => {
   Product.getAll((err, results) => {
     if (err) {
@@ -10,7 +11,6 @@ exports.getProducts = (req, res) => {
     res.json(results);
   });
 };
-
 
 exports.getAvailableProducts = (req, res) => {
   Product.getAllAvailable((err, results) => {
@@ -21,7 +21,7 @@ exports.getAvailableProducts = (req, res) => {
   });
 };
 
-
+// නව නිෂ්පාදනයක් සාදන්න
 exports.createProduct = (req, res) => {
   const {
     product_name,
@@ -30,19 +30,25 @@ exports.createProduct = (req, res) => {
     stock_quantity,
     category_id,
     is_available,
+    image_url, // image_url එක මෙහිදී ලබා ගනී
   } = req.body;
+
+  // අවම වශයෙන් අවශ්‍ය දත්ත තිබේදැයි පරීක්ෂා කරන්න
+  if (!product_name || !price || !category_id || !image_url) {
+    return res.status(400).json({ error: "Product name, price, category ID, and image URL are required." });
+  }
 
   Product.getByName(product_name, (err, existingProduct) => {
     if (err) {
       return res.status(500).json({ error: "Database query failed." });
     }
 
-    // Product එකක් දැනටමත් තිබේ නම්, error එකක් යවනවා
+    // Product එකක් දැනටමත් තිබේ නම්, 409 Conflict error එකක් යවන්න
     if (existingProduct) {
       return res.status(409).json({ error: "Product name already exists." });
     }
 
-    // Product එකක් නැතිනම්, අලුත් Product එකක් create කරනවා
+    // Product එකක් නැතිනම්, අලුත් Product එකක් create කරන්න
     const newProduct = {
       product_name,
       price,
@@ -50,6 +56,7 @@ exports.createProduct = (req, res) => {
       stock_quantity,
       category_id,
       is_available: is_available !== undefined ? is_available : true,
+      image_url, // image_url එක object එකට එකතු කරයි
     };
 
     Product.create(newProduct, (err, result) => {
@@ -66,7 +73,7 @@ exports.createProduct = (req, res) => {
   });
 };
 
-// Get a product by ID
+// ID එක අනුව නිෂ්පාදනයක් ලබාගන්න
 exports.getProductById = (req, res) => {
   const { id } = req.params;
   Product.getById(id, (err, results) => {
@@ -80,7 +87,7 @@ exports.getProductById = (req, res) => {
   });
 };
 
-// Update a product by ID
+// ID එක අනුව නිෂ්පාදනයක් යාවත්කාලීන කරන්න
 exports.updateProduct = (req, res) => {
   const { id } = req.params;
   const {
@@ -90,7 +97,9 @@ exports.updateProduct = (req, res) => {
     stock_quantity,
     category_id,
     is_available,
+    image_url, // image_url එක මෙහිදී ලබා ගනී
   } = req.body;
+  
   const updatedProduct = {
     product_name,
     price,
@@ -98,6 +107,7 @@ exports.updateProduct = (req, res) => {
     stock_quantity,
     category_id,
     is_available,
+    image_url, // image_url එක object එකට එකතු කරයි
   };
 
   Product.update(id, updatedProduct, (err, result) => {
@@ -111,7 +121,7 @@ exports.updateProduct = (req, res) => {
   });
 };
 
-
+// ID එක අනුව නිෂ්පාදනයක් මකා දමන්න
 exports.deleteProduct = (req, res) => {
   const { id } = req.params;
   Product.delete(id, (err, result) => {

@@ -3,7 +3,6 @@
 const db = require('../config/db');
 
 class Product {
-  // සියලුම products image_url සමඟ ලබාගැනීමට
   static getAll(callback) {
     const query = 'SELECT product_id, product_name, price, description, stock_quantity, category_id, is_available, image_url FROM Products';
     db.query(query, callback);
