@@ -30,10 +30,9 @@ exports.createProduct = (req, res) => {
     stock_quantity,
     category_id,
     is_available,
-    image_url, // image_url එක මෙහිදී ලබා ගනී
+    image_url,
   } = req.body;
 
-  // අවම වශයෙන් අවශ්‍ය දත්ත තිබේදැයි පරීක්ෂා කරන්න
   if (!product_name || !price || !category_id || !image_url) {
     return res.status(400).json({ error: "Product name, price, category ID, and image URL are required." });
   }
@@ -43,12 +42,10 @@ exports.createProduct = (req, res) => {
       return res.status(500).json({ error: "Database query failed." });
     }
 
-    // Product එකක් දැනටමත් තිබේ නම්, 409 Conflict error එකක් යවන්න
     if (existingProduct) {
       return res.status(409).json({ error: "Product name already exists." });
     }
 
-    // Product එකක් නැතිනම්, අලුත් Product එකක් create කරන්න
     const newProduct = {
       product_name,
       price,
@@ -56,7 +53,7 @@ exports.createProduct = (req, res) => {
       stock_quantity,
       category_id,
       is_available: is_available !== undefined ? is_available : true,
-      image_url, // image_url එක object එකට එකතු කරයි
+      image_url,
     };
 
     Product.create(newProduct, (err, result) => {
@@ -97,7 +94,7 @@ exports.updateProduct = (req, res) => {
     stock_quantity,
     category_id,
     is_available,
-    image_url, // image_url එක මෙහිදී ලබා ගනී
+    image_url,
   } = req.body;
   
   const updatedProduct = {
@@ -107,7 +104,7 @@ exports.updateProduct = (req, res) => {
     stock_quantity,
     category_id,
     is_available,
-    image_url, // image_url එක object එකට එකතු කරයි
+    image_url,
   };
 
   Product.update(id, updatedProduct, (err, result) => {
@@ -118,6 +115,44 @@ exports.updateProduct = (req, res) => {
       return res.status(404).json({ error: "Product not found." });
     }
     res.json({ message: "Product updated successfully" });
+  });
+};
+
+// තොග ප්‍රමාණය යාවත්කාලීන කිරීමට නව ශ්‍රිතය
+exports.updateStock = (req, res) => {
+  const { id } = req.params;
+  const { stock_quantity } = req.body;
+  if (stock_quantity === undefined) {
+    return res.status(400).json({ error: "Stock quantity is required." });
+  }
+
+  Product.updateStock(id, stock_quantity, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to update stock." });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Product not found or no change in stock." });
+    }
+    res.json({ message: "Stock updated successfully." });
+  });
+};
+
+// ලබා ගත හැකි බව (availability) යාවත්කාලීන කිරීමට නව ශ්‍රිතය
+exports.toggleAvailability = (req, res) => {
+  const { id } = req.params;
+  const { is_available } = req.body;
+  if (is_available === undefined) {
+    return res.status(400).json({ error: "Availability status is required." });
+  }
+
+  Product.updateAvailability(id, is_available, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to update availability." });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Product not found or no change in availability." });
+    }
+    res.json({ message: "Availability updated successfully." });
   });
 };
 

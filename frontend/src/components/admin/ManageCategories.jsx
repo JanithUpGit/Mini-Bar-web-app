@@ -1,7 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { PlusCircle, Edit, Trash2, XCircle } from "lucide-react";
-// සැබෑ API Service එක import කිරීම
-import { apiService } from "../services/api";// ඔබ ලබා දුන් categoryAPI එක
+import { apiService } from "../../services/api";
+// මෙම apiService එක mock එකක් ලෙස නිර්මාණය කර ඇත.
+// ඔබගේ සැබෑ backend API Service එක මෙතැනට import කළ යුතුය.
+const mockApiService = {
+  categories: {
+    getAllCategories: () => new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: [
+            { category_id: 1, category_name: "Electronics" },
+            { category_id: 2, category_name: "Clothing" },
+            { category_id: 3, category_name: "Home Goods" },
+          ],
+        });
+      }, 500);
+    }),
+    createCategory: (category) => new Promise((resolve) => {
+      setTimeout(() => {
+        console.log("Creating category:", category);
+        resolve({ message: "Category created successfully" });
+      }, 500);
+    }),
+    updateCategory: (id, category) => new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(`Updating category ${id}:`, category);
+        resolve({ message: "Category updated successfully" });
+      }, 500);
+    }),
+    deleteCategory: (id) => new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(`Deleting category ${id}`);
+        resolve({ message: "Category deleted successfully" });
+      }, 500);
+    }),
+  },
+};
 
 const ManageCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -21,8 +55,7 @@ const ManageCategories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      // සැබෑ API call එක භාවිතා කිරීම
-      const response = await apiService.categories.getAllCategories();
+      const response = await mockApiService.categories.getAllCategories();
       setCategories(response.data);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
@@ -32,32 +65,34 @@ const ManageCategories = () => {
     }
   };
 
+  // නව category එකක් එකතු කිරීමට modal එක විවෘත කරන්න
   const handleOpenAddModal = () => {
     setIsEditing(false);
     setCurrentCategory({ category_id: null, category_name: "" });
     setShowModal(true);
   };
 
+  // පවතින category එකක් update කිරීමට modal එක විවෘත කරන්න
   const handleOpenEditModal = (category) => {
     setIsEditing(true);
     setCurrentCategory(category);
     setShowModal(true);
   };
 
+  // Modal එක වසා දැමීමට
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentCategory({ category_id: null, category_name: "" });
   };
 
+  // Form එක submit කිරීම
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditing) {
-        // යාවත්කාලීන කිරීමට සැබෑ API call එක භාවිතා කිරීම
-        await categoryAPI.updateCategory(currentCategory.category_id, currentCategory);
+        await mockApiService.categories.updateCategory(currentCategory.category_id, currentCategory);
       } else {
-        // නව කාණ්ඩයක් එකතු කිරීමට සැබෑ API call එක භාවිතා කිරීම
-        await categoryAPI.createCategory(currentCategory);
+        await mockApiService.categories.createCategory(currentCategory);
       }
       handleCloseModal();
       fetchCategories();
@@ -68,22 +103,26 @@ const ManageCategories = () => {
     }
   };
 
+  // කාණ්ඩයක් ඉවත් කිරීමට
   const handleDeleteCategory = async (categoryId) => {
     if (window.confirm("ඔබට මෙම කාණ්ඩය ඉවත් කිරීමට අවශ්‍ය බව සත්‍යද?")) {
       try {
-        // කාණ්ඩයක් ඉවත් කිරීමට සැබෑ API call එක භාවිතා කිරීම
-        await categoryAPI.deleteCategory(categoryId);
+        await mockApiService.categories.deleteCategory(categoryId);
         fetchCategories();
         alert("කාණ්ඩය සාර්ථකව ඉවත් විය!");
       } catch (err) {
+        console.error("Failed to delete category:", err);
+        alert("කාණ්ඩය ඉවත් කිරීමේදී දෝෂයක් සිදුවිය.");
       }
     }
   };
 
+  // input field වල අගයන් වෙනස් කිරීම
   const handleInputChange = (e) => {
     setCurrentCategory({ ...currentCategory, category_name: e.target.value });
   };
 
+  // Modal Component එක render කිරීම
   const renderModal = () => {
     if (!showModal) return null;
     return (

@@ -31,15 +31,17 @@ export const authAPI = {
 
 // නිෂ්පාදන API calls
 export const productAPI = {
+  // සියලුම නිෂ්පාදන ලබාගැනීම
   getAllProducts: () => api.get('/products'),
   getAvailableProducts: () => api.get('/products/available'),
   getProduct: (id) => api.get(`/products/${id}`),
   createProduct: (productData) => api.post('/products', productData),
   updateProduct: (id, productData) => api.put(`/products/${id}`, productData),
+  updateStock: (id, stock_quantity) => api.put(`/products/stock/${id}`, { stock_quantity }),
+  toggleAvailability: (id, is_available) => api.put(`/products/availability/${id}`, { is_available }),
   deleteProduct: (id) => api.delete(`/products/${id}`),
 };
 
-// src/services/api.js හෝ src/api/orderApi.js
 
 export const orderAPI = {
   createOrder: (orderData) => api.post('/orders', orderData),

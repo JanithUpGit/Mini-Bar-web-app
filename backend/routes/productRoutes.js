@@ -1,5 +1,3 @@
-// backend/routes/productRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
@@ -18,6 +16,12 @@ router.get('/:id', isAuthenticated, isAdmin, productController.getProductById);
 
 // Update a product by ID (Admin access)
 router.put('/:id', isAuthenticated, isAdmin, productController.updateProduct);
+
+// තොගය යාවත්කාලීන කිරීමට නව මාර්ගය
+router.put('/stock/:id', isAuthenticated, isAdmin, productController.updateStock);
+
+// ලබා ගත හැකි බව (availability) යාවත්කාලීන කිරීමට නව මාර්ගය
+router.put('/availability/:id', isAuthenticated, isAdmin, productController.toggleAvailability);
 
 // Delete a product by ID (Admin access)
 router.delete('/:id', isAuthenticated, isAdmin, productController.deleteProduct);

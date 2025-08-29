@@ -3,6 +3,7 @@
 const db = require('../config/db');
 
 class Product {
+  // සියලුම products image_url සමඟ ලබාගැනීමට
   static getAll(callback) {
     const query = 'SELECT product_id, product_name, price, description, stock_quantity, category_id, is_available, image_url FROM Products';
     db.query(query, callback);
@@ -25,7 +26,7 @@ class Product {
   }
   
   static getAllAvailable(callback) {
-    const query = 'SELECT product_id, product_name, price, description, stock_quantity, category_id, is_available, image_url FROM Products WHERE stock_quantity > 0';
+    const query = 'SELECT product_id, product_name, price, description, stock_quantity, category_id, is_available, image_url FROM Products WHERE is_available = 1';
     db.query(query, callback);
   }
 
@@ -40,6 +41,18 @@ class Product {
     const query = 'UPDATE Products SET product_name = ?, price = ?, description = ?, stock_quantity = ?, category_id = ?, is_available = ?, image_url = ? WHERE product_id = ?';
     const values = [updatedProduct.product_name, updatedProduct.price, updatedProduct.description, updatedProduct.stock_quantity, updatedProduct.category_id, updatedProduct.is_available, updatedProduct.image_url, id];
     db.query(query, values, callback);
+  }
+
+  // තොග ප්‍රමාණය පමණක් යාවත්කාලීන කිරීමට නව ශ්‍රිතය
+  static updateStock(id, stock_quantity, callback) {
+    const query = 'UPDATE Products SET stock_quantity = ? WHERE product_id = ?';
+    db.query(query, [stock_quantity, id], callback);
+  }
+
+  // ලබා ගත හැකි බව (is_available) පමණක් යාවත්කාලීන කිරීමට නව ශ්‍රිතය
+  static updateAvailability(id, is_available, callback) {
+    const query = 'UPDATE Products SET is_available = ? WHERE product_id = ?';
+    db.query(query, [is_available, id], callback);
   }
 
   // Product එකක් delete කිරීමට
