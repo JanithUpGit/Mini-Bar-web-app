@@ -1,41 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { PlusCircle, Edit, Trash2, XCircle } from "lucide-react";
 import { apiService } from "../../services/api";
-// මෙම apiService එක mock එකක් ලෙස නිර්මාණය කර ඇත.
-// ඔබගේ සැබෑ backend API Service එක මෙතැනට import කළ යුතුය.
-const mockApiService = {
-  categories: {
-    getAllCategories: () => new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          data: [
-            { category_id: 1, category_name: "Electronics" },
-            { category_id: 2, category_name: "Clothing" },
-            { category_id: 3, category_name: "Home Goods" },
-          ],
-        });
-      }, 500);
-    }),
-    createCategory: (category) => new Promise((resolve) => {
-      setTimeout(() => {
-        console.log("Creating category:", category);
-        resolve({ message: "Category created successfully" });
-      }, 500);
-    }),
-    updateCategory: (id, category) => new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(`Updating category ${id}:`, category);
-        resolve({ message: "Category updated successfully" });
-      }, 500);
-    }),
-    deleteCategory: (id) => new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(`Deleting category ${id}`);
-        resolve({ message: "Category deleted successfully" });
-      }, 500);
-    }),
-  },
-};
 
 const ManageCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -46,6 +11,7 @@ const ManageCategories = () => {
   const [currentCategory, setCurrentCategory] = useState({
     category_id: null,
     category_name: "",
+    image_url: "", 
   });
 
   useEffect(() => {
@@ -55,74 +21,68 @@ const ManageCategories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await mockApiService.categories.getAllCategories();
+      const response = await apiService.categories.getAllCategories();
       setCategories(response.data);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
-      setError("කාණ්ඩ ලබාගැනීම අසාර්ථක විය.");
+      setError("Failed to retrieve categories.");
     } finally {
       setLoading(false);
     }
   };
 
-  // නව category එකක් එකතු කිරීමට modal එක විවෘත කරන්න
   const handleOpenAddModal = () => {
     setIsEditing(false);
-    setCurrentCategory({ category_id: null, category_name: "" });
+    setCurrentCategory({ category_id: null, category_name: "", image_url: "" });
     setShowModal(true);
   };
 
-  // පවතින category එකක් update කිරීමට modal එක විවෘත කරන්න
   const handleOpenEditModal = (category) => {
     setIsEditing(true);
     setCurrentCategory(category);
     setShowModal(true);
   };
 
-  // Modal එක වසා දැමීමට
   const handleCloseModal = () => {
     setShowModal(false);
-    setCurrentCategory({ category_id: null, category_name: "" });
+    setCurrentCategory({ category_id: null, category_name: "", image_url: "" });
   };
 
-  // Form එක submit කිරීම
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditing) {
-        await mockApiService.categories.updateCategory(currentCategory.category_id, currentCategory);
+        await apiService.categories.updateCategory(currentCategory.category_id, currentCategory);
       } else {
-        await mockApiService.categories.createCategory(currentCategory);
+        await apiService.categories.createCategory(currentCategory);
       }
       handleCloseModal();
       fetchCategories();
-      alert(`කාණ්ඩය සාර්ථකව ${isEditing ? 'යාවත්කාලීන විය!' : 'එකතු විය!'}`);
+      alert(`Category ${isEditing ? 'updated' : 'added'} successfully!`);
     } catch (err) {
       console.error("Failed to save category:", err);
-      alert("කාණ්ඩය සුරැකීමේදී දෝෂයක් සිදුවිය.");
+      alert("An error occurred while saving the category.");
     }
   };
 
-  // කාණ්ඩයක් ඉවත් කිරීමට
   const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm("ඔබට මෙම කාණ්ඩය ඉවත් කිරීමට අවශ්‍ය බව සත්‍යද?")) {
+    if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await mockApiService.categories.deleteCategory(categoryId);
+        await apiService.categories.deleteCategory(categoryId);
         fetchCategories();
-        alert("කාණ්ඩය සාර්ථකව ඉවත් විය!");
+        alert("Category deleted successfully!");
       } catch (err) {
         console.error("Failed to delete category:", err);
-        alert("කාණ්ඩය ඉවත් කිරීමේදී දෝෂයක් සිදුවිය.");
+        alert("An error occurred while deleting the category.");
       }
     }
   };
 
-  // input field වල අගයන් වෙනස් කිරීම
   const handleInputChange = (e) => {
-    setCurrentCategory({ ...currentCategory, category_name: e.target.value });
+    const { name, value } = e.target;
+    setCurrentCategory({ ...currentCategory, [name]: value });
   };
 
-  // Modal Component එක render කිරීම
   const renderModal = () => {
     if (!showModal) return null;
     return (
@@ -141,11 +101,11 @@ const ManageCategories = () => {
             <XCircle size={24} />
           </button>
           <h3 className="text-2xl font-bold mb-4">
-            {isEditing ? "කාණ්ඩය යාවත්කාලීන කරන්න" : "නව කාණ්ඩයක් එක් කරන්න"}
+            {isEditing ? "Update Category" : "Add New Category"}
           </h3>
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div>
-              <label className="block text-gray-700">කාණ්ඩයේ නම</label>
+              <label className="block text-gray-700">Category Name</label>
               <input
                 type="text"
                 name="category_name"
@@ -155,11 +115,22 @@ const ManageCategories = () => {
                 required
               />
             </div>
+            <div>
+              <label className="block text-gray-700">Image URL</label>
+              <input
+                type="text"
+                name="image_url"
+                value={currentCategory.image_url}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md"
+                required
+              />
+            </div>
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              {isEditing ? "යාවත්කාලීන කරන්න" : "එක් කරන්න"}
+              {isEditing ? "Update" : "Add"}
             </button>
           </form>
         </div>
@@ -168,7 +139,7 @@ const ManageCategories = () => {
   };
 
   if (loading) {
-    return <div className="p-6 text-center">දත්ත loading වෙමින් පවතී...</div>;
+    return <div className="p-6 text-center">Loading data...</div>;
   }
 
   if (error) {
@@ -178,12 +149,12 @@ const ManageCategories = () => {
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">කාණ්ඩ කළමනාකරණය</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Manage Categories</h2>
         <button
           onClick={handleOpenAddModal}
           className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center"
         >
-          <PlusCircle size={20} className="mr-2" /> නව කාණ්ඩයක් එක් කරන්න
+          <PlusCircle size={20} className="mr-2" /> Add New Category
         </button>
       </div>
 
@@ -192,8 +163,9 @@ const ManageCategories = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">කාණ්ඩයේ නම</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ක්‍රියාදාමයන්</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -202,6 +174,9 @@ const ManageCategories = () => {
                 <tr key={category.category_id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {category.category_id}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <img src={category.image_url} alt={category.category_name} className="w-12 h-12 object-cover" />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {category.category_name}
@@ -224,8 +199,8 @@ const ManageCategories = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
-                  කිසිදු කාණ්ඩයක් හමු නොවීය.
+                <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                  No categories found.
                 </td>
               </tr>
             )}

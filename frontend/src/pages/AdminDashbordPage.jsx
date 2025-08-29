@@ -1,201 +1,81 @@
-import React, { useState, useEffect } from "react";
-import { PlusCircle, Edit, Trash2, XCircle } from "lucide-react";
-// සැබෑ API Service එක import කිරීම
-import { apiService } from "../services/api";// ඔබ ලබා දුන් categoryAPI එක
+import React, { useState } from "react";
+import { Users, Package, ShoppingCart, Menu, LayoutGrid } from "lucide-react";
+// Importing Components
+import ManageUsers from '../components/admin/ManageUsers';
+import ManageProducts from '../components/admin/ManageProducts';
+import ManageOrders from '../components/admin/ManageOrders';
+import ManageCategories from "../components/admin/ManageCategories";
 
-const ManageCategories = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState({
-    category_id: null,
-    category_name: "",
-  });
+export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState("products"); // Default tab is set to Products
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      // සැබෑ API call එක භාවිතා කිරීම
-      const response = await apiService.categories.getAllCategories();
-      setCategories(response.data);
-    } catch (err) {
-      console.error("Failed to fetch categories:", err);
-      setError("කාණ්ඩ ලබාගැනීම අසාර්ථක විය.");
-    } finally {
-      setLoading(false);
+  const renderContent = () => {
+    switch (activeTab) {
+      case "users":
+        return <ManageUsers />;
+      case "products":
+        return <ManageProducts />;
+      case "orders":
+        return <ManageOrders />;
+      case "categories": // Tab name changed to 'categories'
+        return <ManageCategories/>;
+      default:
+        return <div className="p-4 text-gray-600">Please select an option to manage.</div>;
     }
   };
-
-  const handleOpenAddModal = () => {
-    setIsEditing(false);
-    setCurrentCategory({ category_id: null, category_name: "" });
-    setShowModal(true);
-  };
-
-  const handleOpenEditModal = (category) => {
-    setIsEditing(true);
-    setCurrentCategory(category);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setCurrentCategory({ category_id: null, category_name: "" });
-  };
-
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        // යාවත්කාලීන කිරීමට සැබෑ API call එක භාවිතා කිරීම
-        await categoryAPI.updateCategory(currentCategory.category_id, currentCategory);
-      } else {
-        // නව කාණ්ඩයක් එකතු කිරීමට සැබෑ API call එක භාවිතා කිරීම
-        await categoryAPI.createCategory(currentCategory);
-      }
-      handleCloseModal();
-      fetchCategories();
-      alert(`කාණ්ඩය සාර්ථකව ${isEditing ? 'යාවත්කාලීන විය!' : 'එකතු විය!'}`);
-    } catch (err) {
-      console.error("Failed to save category:", err);
-      alert("කාණ්ඩය සුරැකීමේදී දෝෂයක් සිදුවිය.");
-    }
-  };
-
-  const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm("ඔබට මෙම කාණ්ඩය ඉවත් කිරීමට අවශ්‍ය බව සත්‍යද?")) {
-      try {
-        // කාණ්ඩයක් ඉවත් කිරීමට සැබෑ API call එක භාවිතා කිරීම
-        await categoryAPI.deleteCategory(categoryId);
-        fetchCategories();
-        alert("කාණ්ඩය සාර්ථකව ඉවත් විය!");
-      } catch (err) {
-      }
-    }
-  };
-
-  const handleInputChange = (e) => {
-    setCurrentCategory({ ...currentCategory, category_name: e.target.value });
-  };
-
-  const renderModal = () => {
-    if (!showModal) return null;
-    return (
-      <div
-        className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50"
-        onClick={handleCloseModal}
-      >
-        <div
-          className="relative p-8 bg-white w-full max-w-sm rounded-lg shadow-xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-            onClick={handleCloseModal}
-          >
-            <XCircle size={24} />
-          </button>
-          <h3 className="text-2xl font-bold mb-4">
-            {isEditing ? "කාණ්ඩය යාවත්කාලීන කරන්න" : "නව කාණ්ඩයක් එක් කරන්න"}
-          </h3>
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div>
-              <label className="block text-gray-700">කාණ්ඩයේ නම</label>
-              <input
-                type="text"
-                name="category_name"
-                value={currentCategory.category_name}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              {isEditing ? "යාවත්කාලීන කරන්න" : "එක් කරන්න"}
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  };
-
-  if (loading) {
-    return <div className="p-6 text-center">දත්ත loading වෙමින් පවතී...</div>;
-  }
-
-  if (error) {
-    return <div className="p-6 text-center text-red-500">{error}</div>;
-  }
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">කාණ්ඩ කළමනාකරණය</h2>
-        <button
-          onClick={handleOpenAddModal}
-          className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center"
-        >
-          <PlusCircle size={20} className="mr-2" /> නව කාණ්ඩයක් එක් කරන්න
-        </button>
+    <div className="flex h-screen bg-gray-100 font-sans">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-lg p-4 hidden md:block">
+        <h2 className="text-xl font-bold mb-6 text-gray-800">Admin Dashboard</h2>
+        <nav className="space-y-2">
+          <button
+            className={`flex items-center gap-2 p-2 rounded w-full text-left ${
+              activeTab === "products" ? "bg-blue-500 text-white" : "hover:bg-gray-200 text-gray-700"
+            }`}
+            onClick={() => setActiveTab("products")}
+          >
+            <Package size={18} /> Products
+          </button>
+          
+          <button
+            className={`flex items-center gap-2 p-2 rounded w-full text-left ${
+              activeTab === "categories" ? "bg-blue-500 text-white" : "hover:bg-gray-200 text-gray-700"
+            }`}
+            onClick={() => setActiveTab("categories")}
+          >
+            <LayoutGrid size={18} /> Categories
+          </button>
+
+          <button
+            className={`flex items-center gap-2 p-2 rounded w-full text-left ${
+              activeTab === "orders" ? "bg-blue-500 text-white" : "hover:bg-gray-200 text-gray-700"
+            }`}
+            onClick={() => setActiveTab("orders")}
+          >
+            <ShoppingCart size={18} /> Orders
+          </button>
+          
+          <button
+            className={`flex items-center gap-2 p-2 rounded w-full text-left ${
+              activeTab === "users" ? "bg-blue-500 text-white" : "hover:bg-gray-200 text-gray-700"
+            }`}
+            onClick={() => setActiveTab("users")}
+          >
+            <Users size={18} /> Users
+          </button>
+        </nav>
+      </aside>
+
+      {/* Mobile Topbar */}
+      <div className="md:hidden fixed top-0 left-0 w-full bg-white shadow p-3 flex items-center gap-2">
+        <Menu size={20} />
+        <h2 className="text-lg font-bold text-gray-800">Admin Dashboard</h2>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">කාණ්ඩයේ නම</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ක්‍රියාදාමයන්</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {categories.length > 0 ? (
-              categories.map((category) => (
-                <tr key={category.category_id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {category.category_id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {category.category_name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => handleOpenEditModal(category)}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Edit size={20} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCategory(category.category_id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
-                  කිසිදු කාණ්ඩයක් හමු නොවීය.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      {renderModal()}
+      {/* Main Content */}
+      <main className="flex-1 p-6 overflow-y-auto">{renderContent()}</main>
     </div>
   );
-};
-
-export default ManageCategories;
+}

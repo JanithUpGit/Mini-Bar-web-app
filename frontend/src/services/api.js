@@ -59,8 +59,16 @@ export const categoryAPI = {
   deleteCategory: (id) => api.delete(`/categories/${id}`),
 };
 
+export const usersAPI = {
+  getAllUsers: () => api.get('/users'),
+  updateUser: (userId, userData) => api.put(`/users/${userId}`, userData),
+  deleteUser: (userId) => api.delete(`/users/${userId}`),
+  searchUsersByName: (name) => api.get(`/users/search?name=${name}`),
+};
+
 // සියලුම API objects එකට ගොනු කරයි
 export const apiService = {
+  users:usersAPI,
   auth: authAPI,
   products: productAPI,
   orders: orderAPI,

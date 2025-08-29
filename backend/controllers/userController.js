@@ -137,3 +137,18 @@ exports.profile = (req, res) => {
   }
 };
 
+
+
+exports.searchUsersByName = (req, res) => {
+  const { name } = req.query;
+  if (!name) {
+    return res.status(400).json({ error: 'Name query parameter is required.' });
+  }
+
+  User.getByName(name, (err, users) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to retrieve users.' });
+    }
+    res.json(users);
+  });
+};
