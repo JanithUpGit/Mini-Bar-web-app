@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag } from "lucide-react"; 
+import { ShoppingBag } from "lucide-react";
 import Navbar from "../components/nav";
 import { useCart } from "../store/CartContext";
-import { apiService } from "../services/api"; 
+import { apiService } from "../services/api";
+import ProductCard from "../components/ProductCard";
+import Header from "../components/Header";
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
@@ -11,20 +13,19 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true); // Loading තත්ත්වය කළමනාකරණයට
   const [error, setError] = useState(null); // දෝෂ පණිවිඩ සඳහා
 
- 
-  const { addToCart } = useCart(); 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const categoriesResponse = await apiService.categories.getAllCategories();
+        const categoriesResponse =
+          await apiService.categories.getAllCategories();
         setCategories(categoriesResponse.data);
 
-        const productsResponse = await apiService.products.getAvailableProducts();
+        const productsResponse =
+          await apiService.products.getAvailableProducts();
         setProducts(productsResponse.data);
-        
       } catch (err) {
         console.error("Failed to fetch data:", err);
         setError("දත්ත ලබා ගැනීමේදී දෝෂයක් සිදුවිය. පසුව නැවත උත්සාහ කරන්න.");
@@ -39,26 +40,10 @@ const HomePage = () => {
 
   return (
     <>
-     
-      
-      <div className="h-16 w-full"></div> 
-      <Navbar/>
+      <div className="h-16 w-full"></div>
+      <Navbar />
       <div className="bg-gray-50">
-        <section className="bg-gradient-to-r from-blue-600 to-green-500 text-white py-20 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Welcome to Mini Bar 🍹
-          </h1>
-          <p className="text-lg md:text-xl mb-6">
-            Discover the best drinks, snacks & more – anytime, anywhere.
-          </p>
-          <Link
-            to="/products"
-            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition"
-          >
-            Explore Menu
-          </Link>
-        </section>
-
+        <Header />
         {/* Loading සහ Error තත්ත්වයන් කළමනාකරණය */}
         {loading && (
           <div className="text-center py-12 text-gray-600">
@@ -73,18 +58,33 @@ const HomePage = () => {
 
         {!loading && !error && (
           <>
-            {/* Categories */}
             <section className="max-w-6xl mx-auto py-12 px-6">
-              <h2 className="text-3xl font-bold text-gray-800 mb-6">Categories</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">
+                Categories
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {categories.map((cat) => (
                   <div
                     key={cat.category_id}
-                    className="bg-white shadow-lg rounded-xl p-6 text-center hover:scale-105 transition cursor-pointer"
+                    className="relative shadow-lg rounded-xl overflow-hidden cursor-pointer h-64 transform -skew-x-6 hover:scale-105 transition"
                   >
-                    <h3 className="text-lg font-semibold text-gray-700">
-                      {cat.category_name}
-                    </h3>
+                    {/* Inner wrapper to cancel skew */}
+                    <div className="absolute inset-0 transform w-70 skew-x-6">
+                      {/* Background Image */}
+                      <div
+                        className="absolute inset-0 bg-cover bg-center scale-125 transition-transform duration-300 group-hover:scale-150"
+                        style={{ backgroundImage: `url(${cat.image_url})` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70"></div>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative h-full flex items-end justify-center p-4 z-10 transform skew-x-6">
+                      <h3 className="text-lg font-semibold text-white text-center">
+                        {cat.category_name}
+                      </h3>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -92,26 +92,13 @@ const HomePage = () => {
 
             {/* Featured Products */}
             <section className="bg-gray-100 py-12 px-6">
-              <h2 className="text-3xl font-bold text-gray-800 mb-6">Featured Products</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products.slice(0, 4).map((product) => (
-                  <div
-                    key={product.product_id}
-                    className="bg-white shadow-md rounded-xl p-4 hover:shadow-xl transition"
-                  >
-                    <div className="h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                      <ShoppingBag className="text-gray-400 w-10 h-10" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-700">
-                      {product.product_name}
-                    </h3>
-                    <p className="text-gray-500 text-sm mb-2">{product.description}</p>
-                    <p className="text-blue-600 font-bold">Rs. {product.price}</p>
-                    <button 
-                    className="mt-3 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                     onClick={() => addToCart(product)}>
-                      Add to Cart
-                    </button>
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">
+                Featured Products
+              </h2>
+              <div className="flex overflow-x-auto gap-6 pb-4">
+                {products.slice(0, 10).map((product) => (
+                  <div className="flex-none  ">
+                    <ProductCard product={product} key={product.product_id} />
                   </div>
                 ))}
               </div>
@@ -119,7 +106,6 @@ const HomePage = () => {
           </>
         )}
 
-        {/* CTA Section */}
         <section className="text-center py-16">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Ready to Order? 🚀

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import {backgroundimage} from '../../assets/images/Login_Register_BG.png';
 import bgImage from "../assets/images/Login_Register_BG.png";
 import { authAPI } from '../services/api';
 import Navbar from '../components/loginNav';
