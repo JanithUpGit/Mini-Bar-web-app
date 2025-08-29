@@ -9,6 +9,9 @@ import AdminDashboardPage from "./pages/AdminDashbordPage";
 import RegisterPage from "./pages/RegisterPage";
 import StorePage from "./pages/StorePage";
 import OrdersPage from "./pages/OrderPage";
+import CartPage from "./pages/CartPage";
+import { Contact } from "lucide-react";
+import ContactPage from "./pages/ContactPage";
 
 function AppContent() {
   const { loading } = useAuth();
@@ -22,7 +25,10 @@ function AppContent() {
       <Route path="/store" element={<StorePage />} />
       <Route path="/store/:categoryId" element={<StorePage />} /> {/* නව Route එක */}
       <Route path="/orders" element={<OrdersPage />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="/dashboard" element={<AdminDashboardPage />} />
+
       <Route path="*" element={<h1>404</h1>} />
     </Routes>
   );
