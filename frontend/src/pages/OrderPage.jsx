@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/nav";
 import { apiService } from "../services/api";
-import { useAuth } from '../../store/AuthContext';
+import { useAuth } from '../store/AuthContext';
 import { Package, CheckCircle, Clock } from "lucide-react";
 
 const OrdersPage = () => {

@@ -24,9 +24,7 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (userData) => api.post('/users/login', userData),
   register: (userData) => api.post('/users/register', userData),
-  // Postman එකේ නොතිබුණත්, මෙය සාමාන්‍යයෙන් අවශ්‍ය වන බැවින් තබා ඇත
   getProfile: () => api.get('/users/profile'), 
-  // Postman එකේ නොතිබුණත්, මෙය සාමාන්‍යයෙන් අවශ්‍ය වන බැවින් තබා ඇත
   updateProfile: (userData) => api.put('/users/profile', userData), 
   logout: () => api.post('/users/logout')
 };

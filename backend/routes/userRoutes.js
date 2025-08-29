@@ -11,11 +11,9 @@ router.post('/register', userController.createUser);
 
 // Protected endpoints - require authentication
 router.post('/logout', isAuthenticated, userController.logoutUser);
-
-// Admin-only endpoints - require admin role
+router.get('/profile', isAuthenticated, userController.profile);
 router.get('/', isAuthenticated, isAdmin, userController.getUsers);
 router.get('/:id', isAuthenticated, isAdmin, userController.getUserById);
 router.put('/:id', isAuthenticated, isAdmin, userController.updateUser);
 router.delete('/:id', isAuthenticated, isAdmin, userController.deleteUser);
-
 module.exports = router;

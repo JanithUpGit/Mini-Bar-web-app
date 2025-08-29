@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag } from "lucide-react"; 
 import Navbar from "../components/nav";
-import { useCart } from "../../store/CartContext";
-// apiService එක import කර ගනිමු
+import { useCart } from "../store/CartContext";
 import { apiService } from "../services/api"; 
 
 const HomePage = () => {
@@ -40,7 +39,7 @@ const HomePage = () => {
 
   return (
     <>
-      <Navbar/>
+     
       
       <div className="h-16 w-full"></div> 
       

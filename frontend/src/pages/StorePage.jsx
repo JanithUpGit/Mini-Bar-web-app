@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/nav";
 import { apiService } from "../services/api";
-import { useCart } from '../../store/CartContext'; // Cart Context එක භාවිතා කිරීමට
+import { useCart } from '../store/CartContext'; // Cart Context එක භාවිතා කිරීමට
 import { ShoppingBag } from "lucide-react";
 
 const StorePage = () => {
