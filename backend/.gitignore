@@ -1,6 +1,6 @@
 # .gitignore file එකේ නිවැරදි ආකාරය
 # Ignore all .env files
-.env*
+.env
  
 # Ignore the node_modules directory
 node_modules/
