@@ -11,7 +11,7 @@ class Order {
       const orderValues = [order.user_id, order.total_amount, order.status, order.delivery_address];
       db.query(orderQuery, orderValues, (err, orderResult) => {
         if (err) return db.rollback(() => callback(err));
-        // orderId එක database එක විසින් auto-generate කරයි
+
         const orderId = orderResult.insertId; 
         const itemQuery = 'INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES ?';
         const itemValues = orderItems.map(item => [orderId, item.product_id, item.quantity, item.price]);
@@ -43,23 +43,74 @@ class Order {
     });
   }
 
-  // පරිශීලකයෙකුගේ සියලු orders ලබාගැනීමට
-  static getOrdersByUser(userId, callback) {
-    const query = 'SELECT * FROM Orders WHERE user_id = ? ORDER BY order_datetime DESC';
-    db.query(query, [userId], callback);
-  }
+ 
+    static getOrdersByUser(userId, callback) {
+        const query = 'SELECT * FROM Orders WHERE user_id = ? ORDER BY order_datetime DESC';
+        db.query(query, [userId], callback);
+    }
 
-  // සියලුම orders ලබාගැනීමට (Admin සඳහා)
-  static getAll(callback) {
-    const query = 'SELECT o.order_id, u.user_name, o.total_amount, o.status, o.order_datetime, o.delivery_address FROM Orders o JOIN Users u ON o.user_id = u.user_id ORDER BY o.order_datetime DESC';
-    db.query(query, callback);
-  }
-
+    static getAll(callback) {
+        const query = 'SELECT o.order_id, u.user_name, o.total_amount, o.status, o.order_datetime, o.delivery_address FROM Orders o JOIN Users u ON o.user_id = u.user_id ORDER BY o.order_datetime DESC';
+        db.query(query, callback);
+    }
   // Order status එක update කිරීමට
   static updateStatus(orderId, newStatus, callback) {
     const query = 'UPDATE Orders SET status = ? WHERE order_id = ?';
     db.query(query, [newStatus, orderId], callback);
   }
+
+  // නව ශ්‍රිතය: පරිශීලකයෙකුගේ සියලු ඇණවුම් සහ ඒවායේ භාණ්ඩ ලබාගැනීමට
+    static getOrdersWithItemsByUser(userId, callback) {
+        const ordersQuery = 'SELECT o.* FROM Orders o WHERE o.user_id = ? ORDER BY o.order_datetime DESC';
+        db.query(ordersQuery, [userId], (err, orders) => {
+            if (err) return callback(err);
+            if (orders.length === 0) return callback(null, []);
+
+            const ordersWithItems = [];
+            let completedQueries = 0;
+
+            orders.forEach(order => {
+                const itemsQuery = 'SELECT oi.*, p.product_name, p.image_url FROM Order_Items oi JOIN Products p ON oi.product_id = p.product_id WHERE oi.order_id = ?';
+                db.query(itemsQuery, [order.order_id], (err, itemResults) => {
+                    if (err) return callback(err);
+                    order.items = itemResults;
+                    ordersWithItems.push(order);
+                    completedQueries++;
+
+                    if (completedQueries === orders.length) {
+                        callback(null, ordersWithItems);
+                    }
+                });
+            });
+        });
+    }
+
+     static getAllWithItems(callback) {
+        const ordersQuery = 'SELECT o.*, u.user_name FROM Orders o JOIN Users u ON o.user_id = u.user_id ORDER BY o.order_datetime DESC';
+        db.query(ordersQuery, (err, orders) => {
+            if (err) return callback(err);
+            if (orders.length === 0) return callback(null, []);
+
+            const ordersWithItems = [];
+            let completedQueries = 0;
+
+            orders.forEach(order => {
+                const itemsQuery = 'SELECT oi.*, p.product_name FROM Order_Items oi JOIN Products p ON oi.product_id = p.product_id WHERE oi.order_id = ?';
+                db.query(itemsQuery, [order.order_id], (err, itemResults) => {
+                    if (err) return callback(err);
+                    order.items = itemResults;
+                    ordersWithItems.push(order);
+                    completedQueries++;
+
+                    if (completedQueries === orders.length) {
+                        callback(null, ordersWithItems);
+                    }
+                });
+            });
+        });
+    }
+
+
 
   // Order එකක details සහ items update කිරීමට (Pending තත්ත්වය යටතේ)
   static update(orderId, updatedOrder, updatedItems, callback) {

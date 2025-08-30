@@ -42,6 +42,18 @@ class User {
     const query = 'DELETE FROM Users WHERE user_id = ?';
     db.query(query, [id], callback);
   }
+   static getByName(name, callback) {
+    const query = 'SELECT user_id, user_name, email, user_status, user_role FROM Users WHERE user_name LIKE ?';
+    const searchTerm = `%${name}%`;
+    db.query(query, [searchTerm], (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  }
+  
 }
+
 
 module.exports = User;

@@ -1,93 +1,76 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/nav";
 import { apiService } from "../services/api";
-import { useCart } from '../../store/CartContext'; // Cart Context එක භාවිතා කිරීමට
-import { ShoppingBag } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import ProductGrid from "../components/ProductsGrid";
 
 const StorePage = () => {
+  const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const { addToCart } = useCart(); // addToCart function එක ලබා ගනිමු
+  const { categoryId } = useParams();
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await apiService.products.getAvailableProducts();
-        setProducts(response.data);
+        const categoriesResponse = await apiService.categories.getAllCategories();
+        const productsResponse = await apiService.products.getAvailableProducts();
+        
+        setCategories(categoriesResponse.data);
+        setProducts(productsResponse.data);
       } catch (err) {
-        console.error("Failed to fetch products:", err);
+        console.error("Failed to fetch data:", err);
         setError("දත්ත ලබා ගැනීමේදී දෝෂයක් සිදුවිය. පසුව නැවත උත්සාහ කරන්න.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProducts();
+    fetchData();
   }, []);
 
   return (
     <>
       <Navbar />
-      <div className="h-16 w-full"></div> {/* Navbar එකට ඉඩ තැබීමට */}
-      
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">
-          Our Products
-        </h1>
-        {loading && (
-          <div className="text-center text-xl text-gray-600">
-            Products පූරණය වෙමින් පවතී...
-          </div>
-        )}
-        {error && (
-          <div className="text-center text-xl text-red-500 font-bold">
-            {error}
-          </div>
-        )}
-        {!loading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {products.map((product) => (
-              <div
-                key={product.product_id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
-              >
-                {/* Product image */}
-                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                  {product.image_url ? (
-                    <img
-                      src={product.image_url}
-                      alt={product.product_name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <ShoppingBag size={64} className="text-gray-400" />
-                  )}
+      <div className="h-16 w-full"></div>
+
+      <div className="flex bg-gray-50 min-h-screen">
+        {/* Categories Sidebar */}
+        <div className="bg-black/80 shadow-lg left-0 backdrop-blur-sm hidden md:block w-72 text-white p-6 fixed top-16 h-screen overflow-y-auto">
+          <h2 className="relative z-10 text-2xl font-bold mb-6">Categories</h2>
+          <div className="relative z-10 space-y-4">
+            {categories.map((category) => (
+              <Link to={`/store/${category.category_id}`} key={category.category_id}>
+                <div className="relative shadow-lg rounded-xl overflow-hidden cursor-pointer h-20 transform hover:scale-105 transition my-5">
+                  <div className="absolute inset-0 transform w-70">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center scale-125 transition-transform duration-300 group-hover:scale-150"
+                      style={{ backgroundImage: `url(${category.image_url})` }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70"></div>
+                    </div>
+                  </div>
+                  <div className="relative h-full flex items-end justify-center p-4 z-10 transform">
+                    <h3 className="text-lg font-semibold text-white text-center">
+                      {category.category_name}
+                    </h3>
+                  </div>
                 </div>
-                
-                {/* Product details */}
-                <div className="p-6 text-center">
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                    {product.product_name}
-                  </h2>
-                  <p className="text-gray-600 mb-4 h-12 overflow-hidden text-sm">
-                    {product.description}
-                  </p>
-                  <p className="text-green-600 font-bold text-xl mb-4">
-                    Rs. {product.price}
-                  </p>
-                  <button
-                    onClick={() => addToCart(product)}
-                    className="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
-        )}
+        </div>
+
+        {/* Main Content Area */}
+        <div className="md:ml-72 flex-1 p-20"> {/* md:ml-72 එකතු කරන්න */}
+          <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center gap-4">Our Products</h1>
+          <ProductGrid 
+            selectedCategoryId={categoryId} 
+            allProducts={products}
+            loading={loading}
+            error={error}
+          />
+        </div>
       </div>
     </>
   );
