@@ -80,3 +80,5 @@ DB_NAME=minibar_db
 * npm install react-router-dom
 * npm install tailwindcss @tailwindcss/vite
 * npm install lucide-react
+* cd backend
+npm install serverless-http
