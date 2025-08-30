@@ -24,26 +24,23 @@ const Navbar = () => {
 
   return (
     <nav className="bg-black/80 shadow-lg fixed w-full top-0 left-0 z-50 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-3">
+      <div className="mx-10 px-4 ">
         <div className="flex justify-between h-16 items-center">
           
           {/* Logo + Brand */}
-          <div className="flex items-center space-x-3">
-            <Link to="/" className="flex items-center">
+          <div>
+            <Link to="/">
               <img
                 src={bgImage}
                 alt="Logo"
-                className="h-16 pt-3 w-auto object-contain"
+                className="h-16 top-1 w-auto  fixed"
               />
-              <span className="mx-4 text-2xl font-bold text-red-500 hover:text-red-400 transition">
-                S M Wine Stores
-              </span>
+
             </Link>
           </div>
-
-          {/* Desktop Menu and Auth */}
-          <div className="hidden md:flex space-x-8 items-center">
+          <div className="hidden md:flex md:space-x-10 items-center">
             {/* Navigation Links */}
+            <div className="w-20"></div>
             <Link to="/" className="text-gray-200 hover:text-red-500 transition">Home</Link>
             <Link to="/store" className="text-gray-200 hover:text-red-500 transition">Store</Link>
             <Link to="/orders" className="text-gray-200 hover:text-red-500 transition">Orders</Link>
