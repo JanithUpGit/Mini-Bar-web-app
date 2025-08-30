@@ -40,7 +40,7 @@ const HomePage = () => {
     };
 
     fetchData();
-  }, []); // Empty dependency array means this runs once on mount.
+  }, []); 
 
   const { categories, products, loading, error } = data;
 

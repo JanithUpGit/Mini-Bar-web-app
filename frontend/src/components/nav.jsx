@@ -24,7 +24,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-black/80 shadow-lg fixed w-full top-0 left-0 z-50 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-3">
         <div className="flex justify-between h-16 items-center">
           
           {/* Logo + Brand */}
@@ -33,10 +33,10 @@ const Navbar = () => {
               <img
                 src={bgImage}
                 alt="Logo"
-                className="h-40 pt-3 w-auto object-contain"
+                className="h-16 pt-3 w-auto object-contain"
               />
-              <span className="ml-2 text-2xl font-bold text-red-500 hover:text-red-400 transition">
-                Sarasavi Madura
+              <span className="mx-4 text-2xl font-bold text-red-500 hover:text-red-400 transition">
+                S M Wine Stores
               </span>
             </Link>
           </div>
@@ -45,7 +45,6 @@ const Navbar = () => {
           <div className="hidden md:flex space-x-8 items-center">
             {/* Navigation Links */}
             <Link to="/" className="text-gray-200 hover:text-red-500 transition">Home</Link>
-            <Link to="/offers" className="text-gray-200 hover:text-red-500 transition">Offers</Link>
             <Link to="/store" className="text-gray-200 hover:text-red-500 transition">Store</Link>
             <Link to="/orders" className="text-gray-200 hover:text-red-500 transition">Orders</Link>
             <Link to="/contact" className="text-gray-200 hover:text-red-500 transition">Contact</Link>

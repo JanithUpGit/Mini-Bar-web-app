@@ -14,7 +14,7 @@ export default function ReadyToOrder(){
           <div className="space-x-4">
             <Link
               to="/register"
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-6 py-3 bg--600 text-white rounded-lg hover:bg-blue-700 transition"
             >
               Register
             </Link>

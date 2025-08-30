@@ -14,7 +14,10 @@ import { Contact } from "lucide-react";
 import ContactPage from "./pages/ContactPage";
 import PaymentPage from "./pages/PaymentPage";
 
+
+
 function AppContent() {
+  
   const { loading } = useAuth();
   if (loading) return <p>Checking authentication...</p>;
 

@@ -1,7 +1,7 @@
 // src/pages/PaymentPage.jsx
 
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { apiService } from "../services/api";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useCart } from "../store/CartContext";
