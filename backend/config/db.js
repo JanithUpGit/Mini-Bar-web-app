@@ -24,6 +24,6 @@ async function testConnection() {
   }
 }
 
-testConnection();
+//testConnection();
 
 module.exports = pool;
