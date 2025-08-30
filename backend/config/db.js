@@ -1,26 +1,28 @@
-// backend/config/db.js
-
 require('dotenv').config();
+const mysql = require('mysql2/promise'); // Use promise-based client
 
-const mysql = require('mysql2');
-
-const connection = mysql.createConnection({
+// Create a pool instead of a single connection
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  multipleStatements: true,
-  connectionLimit: 10,      
-  queueLimit: 0 
-  
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  multipleStatements: true
 });
 
-connection.connect(err => {
-  if (err) {
-    console.error('Error connecting to the database: ' + err.stack);
-    return;
+// Test connection (optional)
+async function testConnection() {
+  try {
+    const [rows] = await pool.query('SELECT 1');
+    console.log('Successfully connected to the database!');
+  } catch (err) {
+    console.error('Error connecting to the database:', err);
   }
-  console.log('Successfully connected to the database as id ' + connection.threadId);
-});
+}
 
-module.exports = connection;
+testConnection();
+
+module.exports = pool;

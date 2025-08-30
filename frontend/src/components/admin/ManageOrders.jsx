@@ -1,5 +1,3 @@
-// src/components/admin/ManageOrders.jsx
-
 import React, { useState, useEffect } from "react";
 import { apiService } from "../../services/api";
 import { CheckCircle, Clock, Package, XCircle, ChevronDown, Eye } from "lucide-react";
@@ -17,7 +15,12 @@ const ManageOrders = () => {
       try {
         setLoading(true);
         const response = await apiService.orders.getAllOrders();
-        setOrders(response.data);
+        // Make sure your backend sends products array as 'products'
+        const formattedOrders = response.data.map(order => ({
+          ...order,
+          items: order.products || [] // rename to 'items' for the modal
+        }));
+        setOrders(formattedOrders);
       } catch (err) {
         console.error("Failed to fetch orders:", err);
         setError("ඇණවුම් ලබා ගැනීමේදී දෝෂයක් සිදුවිය.");
@@ -43,14 +46,11 @@ const ManageOrders = () => {
     }
   };
 
-const handleUpdateStatus = async (orderId, newStatus) => {
+  const handleUpdateStatus = async (orderId, newStatus) => {
     if (window.confirm(`ඇණවුම #${orderId} හි තත්ත්වය '${newStatus}' ලෙස වෙනස් කරනවාද?`)) {
       try {
-        const orderData = { orderId : orderId, status : newStatus}
-        console.log(orderData);
-        await apiService.orders.updateOrderStatus(orderData);
-        
-        const updatedOrders = orders.map((order) =>
+        await apiService.orders.updateOrderStatus({ orderId, status: newStatus });
+        const updatedOrders = orders.map(order =>
           order.order_id === orderId ? { ...order, status: newStatus } : order
         );
         setOrders(updatedOrders);
@@ -62,10 +62,7 @@ const handleUpdateStatus = async (orderId, newStatus) => {
     }
   };
 
-  const filteredOrders = orders.filter((order) => {
-    if (filter === "ALL") return true;
-    return order.status === filter;
-  });
+  const filteredOrders = orders.filter(order => filter === "ALL" || order.status === filter);
 
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
@@ -73,90 +70,73 @@ const handleUpdateStatus = async (orderId, newStatus) => {
   };
 
   const renderModal = () => {
-    if (!!selectedOrder && !!showModal) {
-      return (
+    if (!selectedOrder || !showModal) return null;
+
+    return (
+      <div
+        className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50"
+        onClick={() => setShowModal(false)}
+      >
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50"
-          onClick={() => setShowModal(false)}
+          className="relative p-8 bg-white w-full max-w-2xl rounded-lg shadow-xl"
+          onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className="relative p-8 bg-white w-full max-w-2xl rounded-lg shadow-xl"
-            onClick={(e) => e.stopPropagation()}
+          <button
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            onClick={() => setShowModal(false)}
           >
-            <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-              onClick={() => setShowModal(false)}
-            >
-              <XCircle size={24} />
-            </button>
-            <h3 className="text-2xl font-bold mb-4">
-              Order #{selectedOrder.order_id} Details
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
-              <p>
-                <span className="font-semibold">User Name:</span>{" "}
-                {selectedOrder.user_name || 'N/A'}
-              </p>
-              <p>
-                <span className="font-semibold">Date:</span>{" "}
-                {new Date(selectedOrder.order_datetime).toLocaleDateString()}
-              </p>
-              <p>
-                <span className="font-semibold">Status:</span>{" "}
-                {getStatusDisplay(selectedOrder.status).text}
-              </p>
-              <p>
-                <span className="font-semibold">Total:</span> Rs.{" "}
-                {parseFloat(selectedOrder.total_amount).toFixed(2)}
-              </p>
-              <div className="col-span-2">
-                <p className="font-semibold">Delivery Address:</p>
-                <p>{selectedOrder.delivery_address}</p>
-              </div>
+            <XCircle size={24} />
+          </button>
+
+          <h3 className="text-2xl font-bold mb-4">
+            Order #{selectedOrder.order_id} Details
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+            <p><span className="font-semibold">User Name:</span> {selectedOrder.user_name || 'N/A'}</p>
+            <p><span className="font-semibold">Date:</span> {new Date(selectedOrder.created_at).toLocaleDateString()}</p>
+            <p><span className="font-semibold">Status:</span> {getStatusDisplay(selectedOrder.status).text}</p>
+            <p><span className="font-semibold">Total:</span> Rs. {parseFloat(selectedOrder.total_amount).toFixed(2)}</p>
+            <div className="col-span-2">
+              <p className="font-semibold">Delivery Address:</p>
+              <p>{selectedOrder.delivery_address}</p>
             </div>
-            
-            <div className="mt-8">
-              <h4 className="text-lg font-bold mb-2">Items:</h4>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Total</th>
+          </div>
+
+          <div className="mt-8">
+            <h4 className="text-lg font-bold mb-2">Items:</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Total</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {selectedOrder.items.map((item, idx) => (
+                    <tr key={idx}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.product_name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs. {parseFloat(item.unit_price ?? item.price).toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        Rs. {(parseFloat(item.unit_price ?? item.price) * item.quantity).toFixed(2)}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {selectedOrder.items?.map((item, index) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {item.product_name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs. {parseFloat(item.unit_price).toFixed(2)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          Rs. {(parseFloat(item.unit_price) * item.quantity).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      );
-    }
-    return null; // Modal එක නොපෙන්වීමට
+      </div>
+    );
   };
 
-  if (loading) {
-    return <div className="p-6 text-center">ඇණවුම් පූරණය වෙමින් පවතී...</div>;
-  }
-  if (error) {
-    return <div className="p-6 text-center text-red-500">{error}</div>;
-  }
+  if (loading) return <div className="p-6 text-center">ඇණවුම් පූරණය වෙමින් පවතී...</div>;
+  if (error) return <div className="p-6 text-center text-red-500">{error}</div>;
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
@@ -179,7 +159,7 @@ const handleUpdateStatus = async (orderId, newStatus) => {
           </div>
         </div>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -193,60 +173,61 @@ const handleUpdateStatus = async (orderId, newStatus) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredOrders.length > 0 ? (
-              filteredOrders.map((order) => {
-                const statusInfo = getStatusDisplay(order.status);
-                return (
-                  <tr key={order.order_id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      #{order.order_id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.user_name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(order.order_datetime).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      Rs. {parseFloat(order.total_amount).toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.color}`}>
-                        {statusInfo.text}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                         <button onClick={() => handleViewOrder(order)} className="text-blue-600 hover:text-blue-900" title="View Details">
-                        <Eye size={20} />
-                      </button>
-                     {
-                        order.status != "SHIPED" &&
-                         <button onClick={() => handleUpdateStatus(order.order_id, 'SHIPPED')} className="text-blue-600 hover:text-blue-900" title="Mark as Shipped">
+            {filteredOrders.length > 0 ? filteredOrders.map(order => {
+              const statusInfo = getStatusDisplay(order.status);
+              return (
+                <tr key={order.order_id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{order.order_id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.user_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.created_at).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"> Rs. {parseFloat(order.total_amount).toFixed(2)} </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.color}`}>
+                      {statusInfo.text}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button
+                      onClick={() => handleViewOrder(order)}
+                      className="text-blue-600 hover:text-blue-900"
+                      title="View Details"
+                    >
+                      <Eye size={20} />
+                    </button>
+
+                    {order.status !== "SHIPPED" && (
+                      <button
+                        onClick={() => handleUpdateStatus(order.order_id, "SHIPPED")}
+                        className="text-blue-600 hover:text-blue-900"
+                        title="Mark as Shipped"
+                      >
                         <Package size={20} />
                       </button>
+                    )}
 
-                     }
-                     {
-                        order.status != "COMPLETED" &&
-                          <button onClick={() => handleUpdateStatus(order.order_id, 'COMPLETED')} className="text-green-600 hover:text-green-900" title="Mark as Completed">
+                    {order.status !== "COMPLETED" && (
+                      <button
+                        onClick={() => handleUpdateStatus(order.order_id, "COMPLETED")}
+                        className="text-green-600 hover:text-green-900"
+                        title="Mark as Completed"
+                      >
                         <CheckCircle size={20} />
                       </button>
+                    )}
 
-                     }
-                     {
-                        order.status != "CANCELLED" &&
-                          <button onClick={() => handleUpdateStatus(order.order_id, 'CANCELLED')} className="text-red-600 hover:text-red-900" title="Mark as Cancelled">
+                    {order.status !== "CANCELLED" && (
+                      <button
+                        onClick={() => handleUpdateStatus(order.order_id, "CANCELLED")}
+                        className="text-red-600 hover:text-red-900"
+                        title="Mark as Cancelled"
+                      >
                         <XCircle size={20} />
                       </button>
-
-                     }
-
-                      
-                     
-                     
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
+                    )}
+                  </td>
+                </tr>
+              );
+            }) : (
               <tr>
                 <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
                   ඇණවුම් කිසිවක් හමු නොවීය.
@@ -256,6 +237,7 @@ const handleUpdateStatus = async (orderId, newStatus) => {
           </tbody>
         </table>
       </div>
+
       {renderModal()}
     </div>
   );
