@@ -1,9 +1,10 @@
-// backend/app.js
 
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+
 const app = express();
+
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
