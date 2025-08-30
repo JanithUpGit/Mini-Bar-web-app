@@ -1,6 +1,5 @@
 // backend/api/index.js
-const serverless = require("serverless-http");
-const app = require("../app"); // Express app instance එක import කිරීම
+const app = require("../app");
 
-// ✅ serverless handler එක export කිරීම
-module.exports.handler = serverless(app);
+// ✅ Vercel සඳහා Express app එක සෘජුවම export කිරීම
+module.exports = app;
