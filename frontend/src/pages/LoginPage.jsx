@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-//import {backgroundimage} from '../../assets/images/Login_Register_BG.png';
 import bgImage from "../assets/images/Login_Register_BG.png";
 import { authAPI } from '../services/api';
 import Navbar from '../components/loginNav';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../store/AuthContext'; // useAuth hook එක import කරගන්න
+import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,9 +11,8 @@ const LoginPage = () => {
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
+  const {login} = useAuth(); 
 
-  // useAuth hook එකෙන් login function එක ලබාගන්න
-  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,12 +23,8 @@ const LoginPage = () => {
       console.log(email, password);
       const response = await authAPI.login({ email, password });
       
-      if (response.status === 200) {
-        // Login සාර්ථක නම්
-        const { user } = response.data; // response එකෙන් user object එක ලබාගන්න
-        
-        // user object එක AuthContext එකේ login function එකට යවන්න
-        login(user); 
+      if (response.status === 200) {        
+        login(); 
 
         setMessage('සාර්ථකව ප්‍රවේශ විය! 🎉');
         setIsError(false);

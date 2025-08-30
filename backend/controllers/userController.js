@@ -109,7 +109,9 @@ exports.loginUser = (req, res) => {
       // Login සාර්ථකයි, user ගේ තොරතුරු session එකට එකතු කරයි
       req.session.user = { 
         user_id: user.user_id, 
-        user_role: user.user_role 
+        user_role: user.user_role ,
+        user_name: user.user_name,
+        user_email:user.email
       };
 
       res.status(200).json({ message: 'Login successful', user: { id: user.user_id, role: user.user_role } });
@@ -124,5 +126,29 @@ exports.logoutUser = (req, res) => {
       return res.status(500).json({ error: 'Failed to log out.' });
     }
     res.status(200).json({ message: 'Logout successful' });
+  });
+};
+
+exports.profile = (req, res) => {
+  if (req.session.user) {
+    res.status(200).json({ user: req.session.user });
+  } else {
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+};
+
+
+
+exports.searchUsersByName = (req, res) => {
+  const { name } = req.query;
+  if (!name) {
+    return res.status(400).json({ error: 'Name query parameter is required.' });
+  }
+
+  User.getByName(name, (err, users) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to retrieve users.' });
+    }
+    res.json(users);
   });
 };

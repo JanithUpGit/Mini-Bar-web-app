@@ -42,6 +42,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRoutes);
 
+
 app.get("/", (req, res) => {
   res.send("Welcome to the Mini-Bar Backend!");
 });

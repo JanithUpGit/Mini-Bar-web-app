@@ -24,33 +24,33 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (userData) => api.post('/users/login', userData),
   register: (userData) => api.post('/users/register', userData),
-  // Postman එකේ නොතිබුණත්, මෙය සාමාන්‍යයෙන් අවශ්‍ය වන බැවින් තබා ඇත
   getProfile: () => api.get('/users/profile'), 
-  // Postman එකේ නොතිබුණත්, මෙය සාමාන්‍යයෙන් අවශ්‍ය වන බැවින් තබා ඇත
   updateProfile: (userData) => api.put('/users/profile', userData), 
   logout: () => api.post('/users/logout')
 };
 
 // නිෂ්පාදන API calls
 export const productAPI = {
+  // සියලුම නිෂ්පාදන ලබාගැනීම
   getAllProducts: () => api.get('/products'),
   getAvailableProducts: () => api.get('/products/available'),
   getProduct: (id) => api.get(`/products/${id}`),
   createProduct: (productData) => api.post('/products', productData),
   updateProduct: (id, productData) => api.put(`/products/${id}`, productData),
+  updateStock: (id, stock_quantity) => api.put(`/products/stock/${id}`, { stock_quantity }),
+  toggleAvailability: (id, is_available) => api.put(`/products/availability/${id}`, { is_available }),
   deleteProduct: (id) => api.delete(`/products/${id}`),
 };
 
-// ඇණවුම් API calls
+
 export const orderAPI = {
   createOrder: (orderData) => api.post('/orders', orderData),
   getAllOrders: () => api.get('/orders'),
   getOrder: (id) => api.get(`/orders/${id}`),
-  updateOrderStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
+  updateOrderStatus: (orderData) => api.put(`/orders/status`, orderData),
   getUserOrders: () => api.get(`/orders/my-orders`),
 };
 
-// ප්‍රවර්ග API calls
 export const categoryAPI = {
   getAllCategories: () => api.get('/categories'),
   getCategory: (id) => api.get(`/categories/${id}`),
@@ -59,8 +59,16 @@ export const categoryAPI = {
   deleteCategory: (id) => api.delete(`/categories/${id}`),
 };
 
+export const usersAPI = {
+  getAllUsers: () => api.get('/users'),
+  updateUser: (userId, userData) => api.put(`/users/${userId}`, userData),
+  deleteUser: (userId) => api.delete(`/users/${userId}`),
+  searchUsersByName: (name) => api.get(`/users/search?name=${name}`),
+};
+
 // සියලුම API objects එකට ගොනු කරයි
 export const apiService = {
+  users:usersAPI,
   auth: authAPI,
   products: productAPI,
   orders: orderAPI,
