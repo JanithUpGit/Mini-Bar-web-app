@@ -6,7 +6,7 @@ import { useAuth } from "../../store/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+  //C:\Users\shanu\OneDrive\Desktop\Mini-Bar-web-app\frontend\src\assets\images/products/1.png
   // useCart hook to get total cart items
   const { getTotalItems } = useCart();
   const cartItemCount = getTotalItems();
