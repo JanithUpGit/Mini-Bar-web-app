@@ -1,25 +1,27 @@
 // backend/config/db.js
 
-require('dotenv').config();
+const { Pool } = require('pg');
 
-const mysql = require('mysql2');
-
-const connection = mysql.createConnection({
+console.log(process.env.DB_NAME);
+const pool = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT, // ✅ Port එක එකතු කිරීම
-  multipleStatements: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
-connection.connect(err => {
-  if (err) {
-    console.error('Error connecting to the database: ' + err.stack);
-    return;
-  }
-  console.log('Successfully connected to the database as id ' + connection.threadId);
+  port: process.env.DB_PORT,
+  max: 20, 
 });
 
-module.exports = connection;
+async function testConnection() {
+  try {
+    const client = await pool.connect();
+    console.log('Successfully connected to the PostgreSQL database!');
+    client.release(); // සම්බන්ධතාවය pool එකට මුදා හැරීම
+  } catch (err) {
+    console.error('Error connecting to the PostgreSQL database:', err.message);
+  }
+}
+
+testConnection();
+
+module.exports = pool;
