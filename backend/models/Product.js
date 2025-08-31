@@ -18,7 +18,7 @@ class Product {
 
   // නම අනුව භාණ්ඩයක් ලබාගැනීමට
   static async getByName(name) {
-    const query = 'SELECT product_id FROM "Products" WHERE product_name = $1';
+    const query = 'SELECT * FROM "Products" WHERE product_name = $1';
     const { rows } = await pool.query(query, [name]);
     return rows[0];
   }
@@ -37,31 +37,45 @@ class Product {
     return rows[0];
   }
 
-  // Product එකක් image_url සමඟ update කිරීමට
+  // Product එකක් update කිරීමට
   static async update(id, updatedProduct) {
-    const query = 'UPDATE "Products" SET product_name = $1, price = $2, description = $3, stock_quantity = $4, category_id = $5, is_available = $6, image_url = $7 WHERE product_id = $8';
-    const values = [updatedProduct.product_name, updatedProduct.price, updatedProduct.description, updatedProduct.stock_quantity, updatedProduct.category_id, updatedProduct.is_available, updatedProduct.image_url, id];
+    const query = `
+      UPDATE "Products" 
+      SET product_name = $1, price = $2, description = $3, stock_quantity = $4, category_id = $5, is_available = $6, image_url = $7 
+      WHERE product_id = $8
+      RETURNING *
+    `;
+    const values = [
+      updatedProduct.product_name,
+      updatedProduct.price,
+      updatedProduct.description,
+      updatedProduct.stock_quantity,
+      updatedProduct.category_id,
+      updatedProduct.is_available,
+      updatedProduct.image_url,
+      id
+    ];
     const { rows } = await pool.query(query, values);
     return rows[0];
   }
 
   // තොග ප්‍රමාණය පමණක් යාවත්කාලීන කිරීමට
   static async updateStock(id, stock_quantity) {
-    const query = 'UPDATE "Products" SET stock_quantity = $1 WHERE product_id = $2';
+    const query = 'UPDATE "Products" SET stock_quantity = $1 WHERE product_id = $2 RETURNING *';
     const { rows } = await pool.query(query, [stock_quantity, id]);
     return rows[0];
   }
 
   // ලබා ගත හැකි බව (is_available) පමණක් යාවත්කාලීන කිරීමට
   static async updateAvailability(id, is_available) {
-    const query = 'UPDATE "Products" SET is_available = $1 WHERE product_id = $2';
+    const query = 'UPDATE "Products" SET is_available = $1 WHERE product_id = $2 RETURNING *';
     const { rows } = await pool.query(query, [is_available, id]);
     return rows[0];
   }
 
   // Product එකක් delete කිරීමට
   static async delete(id) {
-    const query = 'DELETE FROM "Products" WHERE product_id = $1';
+    const query = 'DELETE FROM "Products" WHERE product_id = $1 RETURNING *';
     const { rows } = await pool.query(query, [id]);
     return rows[0];
   }

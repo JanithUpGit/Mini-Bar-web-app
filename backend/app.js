@@ -10,27 +10,26 @@ const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-require("dotenv").config();
 
-// Middleware වල නිවැරදි පිළිවෙළ
+// Middleware
 app.use(express.json());
 
-// CORS middleware එක නිවැරදිව configure කරන්න
+// CORS (fix: FRONTEND_URL instead of FRONT_PORT)
 app.use(
   cors({
-    origin: process.env.FRONT_PORT,
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
   })
 );
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "changeme",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24,
+      secure: process.env.NODE_ENV === "production", // true on production
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   })
 );
@@ -45,11 +44,12 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Mini-Bar Backend!");
 });
 
-if (process.env.NODE_ENV !== 'production') {
+// Local development only
+if (process.env.NODE_ENV !== "production") {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
 }
-// ✅ app instance එක export කිරීම
+
 module.exports = app;

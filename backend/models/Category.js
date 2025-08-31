@@ -22,14 +22,23 @@ class Category {
   }
 
   static async update(id, updatedCategory) {
-    const query = 'UPDATE "Categories" SET category_name = $1, image_url = $2 WHERE category_id = $3';
+    const query = `
+      UPDATE "Categories"
+      SET category_name = $1, image_url = $2
+      WHERE category_id = $3
+      RETURNING *
+    `;
     const values = [updatedCategory.category_name, updatedCategory.image_url, id];
     const { rows } = await pool.query(query, values);
     return rows[0];
   }
 
   static async delete(id) {
-    const query = 'DELETE FROM "Categories" WHERE category_id = $1';
+    const query = `
+      DELETE FROM "Categories"
+      WHERE category_id = $1
+      RETURNING *
+    `;
     const { rows } = await pool.query(query, [id]);
     return rows[0];
   }
