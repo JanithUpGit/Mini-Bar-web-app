@@ -82,3 +82,18 @@ DB_NAME=minibar_db
 * npm install lucide-react
 * cd backend
 npm install serverless-http
+
+firebase functions:config:set db.host="DB_HOST=database-1.c5q2guagq7cg.eu-north-1.rds.amazonaws.com" db.user="postgres" db.password="TrTidiNQKuHsC4OJ3IK2" db.name="madura-db" db.port="5432"
+
+DB_HOST=database-1.c5q2guagq7cg.eu-north-1.rds.amazonaws.com
+DB_USER=postgres
+DB_PASSWORD=TrTidiNQKuHsC4OJ3IK2
+DB_NAME=madura-db
+SESSION_SECRET=a_very_secret_and_long_string
+FRONT_PORT=http://localhost:5175
+DB_PORT=5432
+
+NODE_ENV=development
+PORT=3000
+FRONTEND_URL=http://localhost:5175
+
