@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
-  baseURL: "mini-bar-web-app-pg-host-main-new-b.vercel.app/api",
+  baseURL: "https://mini-bar-web-app-pg-host-main-new-b.vercel.app/api",
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
